@@ -30,3 +30,16 @@ The final piece of puzzle is to use both cuts to determine which edges to take. 
 # Further notes on max cut
 
 The basic idea of the algorithm is to iterate through the vertices and look to which $s$ or $t$ are connected. If only one add it to the component. If none, jsut skip it. If both put it to the vertex which has more neighbours. If the size of neighbours is same choose arbitrarily.
+
+**Definition:** Connected $s-t$ cut for $G = (V,E)$ connected graph and $s \neq t \in V(G)$ is a subset $W \subseteq V(G)$ for which the properties hold:
+
+1. $s \in W$
+2. $t \notin W$
+3. $G[W]$ is connected
+4. $G[V \setminus W]$ is also connected
+
+Then the max $s-t$ cut is max of $|W|$ over all connected $s-t$ cuts.
+
+## Relation to STC
+
+My first claim would be that minimizing max $s-t$ connected cut over all edges (which means $\{s,t\} = e \in E(G)$) is the same as STC.
