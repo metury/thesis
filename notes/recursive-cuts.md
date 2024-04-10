@@ -38,8 +38,8 @@ The basic idea of the algorithm is to iterate through the vertices and look to w
 3. $G[W]$ is connected
 4. $G[V \setminus W]$ is also connected
 
-Then the max $s-t$ cut is max of $|W|$ over all connected $s-t$ cuts.
+Then the max $s-t$ cut is max of $E(W, V \setminus W)$ over all connected $s-t$ cuts.
 
 ## Relation to STC
 
-My first claim would be that minimizing max $s-t$ connected cut over all edges (which means $\{s,t\} = e \in E(G)$) is the same as STC.
+My first claim would be that minimizing max $s-t$ connected cut over all edges (which means $\{s,t\} = e \in E(G)$ ) is the same as STC.
