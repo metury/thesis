@@ -1,0 +1,84 @@
+\documentclass{article}
+
+\usepackage{geometry}
+\geometry{a4paper,total={170mm,257mm},left=20mm,top=20mm}
+
+\usepackage{babel}
+\usepackage[utf8]{inputenc}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{fontawesome5}
+\usepackage{tcolorbox}
+
+\newtcolorbox{defn}[1]{colback=SeaGreen!20!white,
+	colframe=SeaGreen!70!black,
+	colbacktitle=SeaGreen!90!white,
+	fonttitle=\bfseries,
+	title={#1.},
+	center title}
+
+\title{Connected cuts}
+\author{Tomáš Turek}
+\date{\today}
+
+\begin{document}
+	\maketitle
+	
+	\section{Connected cuts}
+	
+	\begin{defn}{Connected $s-t$ cut}
+		For a connected graph $G = (V,E)$ and vertices $s \neq t \in V$ we define \textit{connected $s-t$ cut} as $S \subseteq V$ for which:
+		
+		\begin{enumerate}
+			\item $s \in S$,
+			\item $t \notin S$ and
+			\item $G[S]$ and $G[V \setminus S]$ are connected.
+		\end{enumerate}
+		
+		\noindent And the size of this cut is defined as $E(S, V \setminus S)$. (Where $E(X,Y)$ is for number of edges between sets $X$ and $Y$.)
+	\end{defn}
+	
+	\noindent Similarly define for more sources.
+	
+	\begin{defn}{Multi-way connected cut}
+		For a connected graph $G = (V,E)$ and vertices $s_1, s_2, \dots, s_k \in V$ for $k \in \mathcal{N}$ ("sources") we define connected cut as partition $\mathcal{V} = \{V_1, V_2, \dots, V_k\}$ of vertices (that is $\bigcup_{i = 1, \dots, k} V_i = V$ and for $i \neq j$ $V_i \cap V_j = \emptyset$) such that the following holds:
+		
+		\begin{enumerate}
+			\item $\forall i \in [k]: s_i \in V_i$ and
+			\item $\forall i \in [k]: G[V_i]$ is connected.
+		\end{enumerate}
+		
+		\noindent Now for the sizes we define two versions.
+		
+		\begin{itemize}
+			\item \textit{Sum} size as $\sum_{i < j} E(V_i, V_j)$ or
+			\item \textit{Max} size as $\max_{i \in[k]} E(V_i, V \setminus V_i)$.
+		\end{itemize}
+	\end{defn}
+	
+	\noindent Observe that the sum size is already computed with multi-commodity cut.
+	
+	\noindent Also we may define \textbf{Flexible multi-way connected cut} as relaxing the previous problem. That is the partition will have $l$ partitions where $0 < l \leq k$ and only $l$ sources are representing their partition. So $\forall i \in [l] , \exists k : s_k \in V_l$.
+	
+	\section{Connection to STC}
+	
+	Now for the connection to the STC problem. We will consider a graph where we have one vertex with high degree and all of its $k$ neighbors will be the sources to our problem. Then we will obtain lower bound on STC and also present some algorithm to STC.
+	
+	If we would have flexible multi-way connected cut we could use this every time.
+	
+	\section{Other cuts}
+	
+	\begin{defn}{$k$-connected cut}
+		For a connected graph $G = (V,E)$ we say $S \subseteq V$ is \textit{$k$ connected cut} such that all properties hold:
+		
+		\begin{enumerate}
+			\item $|S| = k$.
+			\item Both $G[S]$ and $G[V \setminus S]$ are connected.
+			\item And we want to minimize $E(S, V \setminus S)$. Which is the size of such cut.
+		\end{enumerate}
+	\end{defn}
+	
+	\noindent Note that choosing only two properties from all three can be computed. If we skip the very first one, we may use the result from Garg, which states a linear program having all vertices as such result. Excluding the second one can be also computed via some approximation algorithm for bisection. And Overlooking the last one we just use some search, because we don't care about the size of the result.
+\end{document}
