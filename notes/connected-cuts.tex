@@ -43,7 +43,7 @@
 	\noindent Similarly define for more sources.
 	
 	\begin{defn}{Multi-way connected cut}
-		For a connected graph $G = (V,E)$ and vertices $s_1, s_2, \dots, s_k \in V$ for $k \in \mathcal{N}$ ("sources") we define connected cut as partition $\mathcal{V} = \{V_1, V_2, \dots, V_k\}$ of vertices (that is $\bigcup_{i = 1, \dots, k} V_i = V$ and for $i \neq j$ $V_i \cap V_j = \emptyset$) such that the following holds:
+		For a connected graph $G = (V,E)$ and vertices $s_1, s_2, \dots, s_k \in V$ for $k \in \mathbb{N}$ ("sources") we define connected cut as partition $\mathcal{V} = \{V_1, V_2, \dots, V_k\}$ of vertices (that is $\bigcup_{i = 1, \dots, k} V_i = V$ and for $i \neq j$ $V_i \cap V_j = \emptyset$) such that the following holds:
 		
 		\begin{enumerate}
 			\item $\forall i \in [k]: s_i \in V_i$ and
@@ -81,4 +81,12 @@
 	\end{defn}
 	
 	\noindent Note that choosing only two properties from all three can be computed. If we skip the very first one, we may use the result from Garg, which states a linear program having all vertices as such result. Excluding the second one can be also computed via some approximation algorithm for bisection. And Overlooking the last one we just use some search, because we don't care about the size of the result.
+	
+	\section{Absorptive flow}
+	
+	\begin{defn}{Absorptive flow}
+		For a graph $G = (V,E)$ and a vertex $s \in V$, also called as the \textit{source}, and for $k \in \mathbb{N}$ we define \textbf{absorptive flow} which starts from $s$ and all edges have infinite capacity. Whenever there is an edge $uv \in E$ such that there is a flow on it, then both $u$ and $v$ absorb some part of the flow.
+	\end{defn}
+
+	The given definition is not that precise. It is rather explained in a common words. For such problem we may define a linear program.
 \end{document}
