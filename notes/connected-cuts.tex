@@ -89,4 +89,57 @@
 	\end{defn}
 
 	The given definition is not that precise. It is rather explained in a common words. For such problem we may define a linear program.
+
+
+	\subsection{Linear program}
+	
+	\subsubsection{Variables}
+	
+	Firstly we declare the variables for edges and for vertices.
+	
+	$$
+	x_v = \left\{\begin{array}{l l}
+		1 & \text{if it absorbs the flow} \\
+		0 & \text{otherwise}
+	\end{array}
+	\right.
+	$$
+	
+	$$
+	x_{uv} \in [0,k] \text{ is for the amount of flow on the edge } uv.
+	$$
+	
+	$$
+	z_{uv} = \left\{\begin{array}{l l}
+		1 & \text{if } x_u + x_v = 1 \\
+		0 & \text{otherwise}
+	\end{array}
+	\right.
+	$$
+	
+	\subsubsection{Constraints}
+	
+	First constrain is to sort of find the edges on the end.
+	
+	$$
+	\begin{array}{c}
+		z_{uv} \geq x_u - x_v \\
+		z_{uv} \geq x_v - x_u
+	\end{array}
+	$$
+	
+	Next we have to set the flow.
+	
+	$$
+	\begin{array}{r l}
+		\sum_{v \in V, sv \in E} x_{sv} = k-1 \\
+		\sum_{u \in V, uv \in E} x_{uv} = \sum_{u \in V, vu \in E} x_{vu} + x_v & \forall v \in V, s \neq v
+	\end{array}
+	$$
+	
+	\subsubsection{Optimization function}
+	
+	$$
+	\min \sum_{e \in E} x_e + z_e
+	$$
 \end{document}
