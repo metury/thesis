@@ -49,7 +49,7 @@
 	We will be now talking about an absorptive flow. Firstly we will state the problem in a common sense. For a graph and a source we get a flow which flows through the graph and every time it goes through a vertex some of the flow gets absorbed into it. After that we will define a cut which is induced by such flow and later on state an integer program and its linear approximation. Now we properly state the instance.
 	
 	\begin{defn}{Absorptive flow}
-		For a graph $G = (V,E)$ and a vertex $s \in V$, also called as the \textit{source}, and for $k \in \mathbb{N}$, such that $|V| \geq k$, we define \textbf{absorptive flow} as a tuple of functions denoted as $f = (f_V, f_E)$. Now these two function must have these properties.
+		For a graph $G = (V,E)$ and a vertex $s \in V$, also called as the \textit{source}, and for $k \in \mathbb{N}$, such that $|V| \geq k$, we define \textbf{absorptive flow} as a tuple of functions denoted as $f = (f_V, f_E)$, where $f_V : V \to \mathbb{R}$ and $f_E : E \to \mathbb{R}$. Now these two function must have these properties.
 		
 		\begin{enumerate}
 			\item $\sum_{v \in V} f_V (v) = k$, that is every part of the flow gets absorbed,
