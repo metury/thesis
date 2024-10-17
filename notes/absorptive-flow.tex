@@ -143,6 +143,8 @@
 	
 	Now what if there are multiple optimal solutions where some of $x_e$ and $z_e$ are exchanged?
 	
+	Because we generaly want to minimize the cut.
+	
 	\subsubsection{Rest}
 	
 	Firstly observe that every time the flow goes through vertex some of its flow gets absorbed. This is always true if the function itself would be just $\min x_e$. In integer program we have only three kinds of edges. Either its inside the flow, on the cut or outside. Now see that if we would set $x_v = 0$ for some $V \in V$ even though there is a flow over it. Then we have to add $1$ to some $x_e$.
