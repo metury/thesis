@@ -19,6 +19,20 @@
 	title={#1.},
 	center title}
 
+\newtcolorbox{observation}[1]{colback=RedOrange!20!white,
+	colframe=RedOrange!70!black,
+	colbacktitle=RedOrange!90!white,
+	fonttitle=\bfseries,
+	title={#1.},
+	center title}
+
+\newtcolorbox{todo}{colback=Goldenrod!20!white,
+	colframe=Goldenrod!70!black,
+	colbacktitle=Goldenrod!90!white,
+	fonttitle=\bfseries,
+	title={\textcolor{black}{TODO}},
+	center title}
+
 \title{Absorptive flow}
 \author{Tomáš Turek}
 \date{\today}
@@ -128,26 +142,23 @@
 	\min \sum_{e \in E} x_e + z_e
 	$$
 	
-	\subsection{\textit{TODO}: Properties}
+	\subsection{Properties}
 	
 	Lets talk about some crucial properties of this integer program.
 		
+	\begin{observation}{Vertices always absorb}
+		Imagine that there is a vertex over which the flow is going and yet the vertex is not absorbing nothing from the flow. By seting the absorbption value of the vertex to one we will decrease the function value by (at least) one. But since it is the optimal value, then it must be increased by at least 2. And also we know that the $x_e$ values did not increased in any way it must happend that $z_e$ values got increased. Therefore there are two edges which became cut edges. Due to the fact, that we decreased the length of the flow and not increased we must say that both of them were occupied by a flow, but that is not possible, because the increse of values are in this state: $x_e < z_e$. Therefore every vertex always absorb the flow if that is possible.
+	\end{observation}
 	
-	\subsubsection{Vertices always absorb}
+	\begin{observation}{Minimality of a cut}
+		Now what if there are multiple optimal solutions where some of $x_e$ and $z_e$ are exchanged?
 		
-	Imagine that there is a vertex over which the flow is going and yet the vertex is not absorbing nothing from the flow. By seting the absorbption value of the vertex to one we will decrease the function value by (at least) one. But since it is the optimal value, then it must be increased by at least 2. And also we know that the $x_e$ values did not increased in any way it must happend that $z_e$ values got increased. Therefore there are two edges which became cut edges. Due to the fact, that we decreased the length of the flow and not increased we must say that both of them were occupied by a flow, but that is not possible, because the increse of values are in this state: $x_e < z_e$.
+		Because we generaly want to minimize the cut.
+	\end{observation}
 	
-	Therefore every vertex always absorb the flow if that is possible.
-	
-	\subsubsection{Minimality of a cut}
-	
-	Now what if there are multiple optimal solutions where some of $x_e$ and $z_e$ are exchanged?
-	
-	Because we generaly want to minimize the cut.
-	
-	\subsubsection{Rest}
-	
-	Firstly observe that every time the flow goes through vertex some of its flow gets absorbed. This is always true if the function itself would be just $\min x_e$. In integer program we have only three kinds of edges. Either its inside the flow, on the cut or outside. Now see that if we would set $x_v = 0$ for some $V \in V$ even though there is a flow over it. Then we have to add $1$ to some $x_e$.
-	
-	$S$ defined by the solution of this ILP has induced connected subgraph.
+	\begin{todo}
+		Firstly observe that every time the flow goes through vertex some of its flow gets absorbed. This is always true if the function itself would be just $\min x_e$. In integer program we have only three kinds of edges. Either its inside the flow, on the cut or outside. Now see that if we would set $x_v = 0$ for some $V \in V$ even though there is a flow over it. Then we have to add $1$ to some $x_e$.
+		
+		$S$ defined by the solution of this ILP has induced connected subgraph.
+	\end{todo}
 \end{document}
