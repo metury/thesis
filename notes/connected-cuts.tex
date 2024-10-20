@@ -13,32 +13,28 @@
 \usepackage{tcolorbox}
 \usepackage{hyperref}
 
-\newtcolorbox{problem}[1]{colback=RoyalBlue!20!white,
-	colframe=RoyalBlue!70!black,
-	colbacktitle=RoyalBlue!90!white,
+\newtcolorbox{problem}[1]{
+	colframe=RoyalBlue,
 	fonttitle=\bfseries,
 	title={#1.},
 	center title}
 
-\newtcolorbox{observation}[1]{colback=RedOrange!20!white,
-	colframe=RedOrange!70!black,
-	colbacktitle=RedOrange!90!white,
+\newtcolorbox{observation}[1]{
+	colframe=RedOrange,
 	fonttitle=\bfseries,
 	title={#1.},
 	center title}
 
-\newtcolorbox{todo}{colback=Goldenrod!20!white,
-	colframe=Goldenrod!70!black,
-	colbacktitle=Goldenrod!90!white,
+\newtcolorbox{todo}{
+	colframe=Plum,
 	fonttitle=\bfseries,
-	title={\textcolor{black}{TODO}},
+	title={TODO},
 	center title}
 
-\newtcolorbox{defn}[1]{colback=Emerald!20!white,
-	colframe=Emerald!70!black,
-	colbacktitle=Emerald!90!white,
+\newtcolorbox{defn}[1]{
+	colframe=SeaGreen,
 	fonttitle=\bfseries,
-	title={\textcolor{black}{Definition (#1)}},
+	title={Definition (#1)},
 	center title}
 
 \title{Notes on connected cuts}
@@ -68,6 +64,7 @@
 	%\end{todo}
 	
 	\tableofcontents
+	
 	
 	\section{Basic cuts}
 	
