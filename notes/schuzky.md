@@ -1,3 +1,9 @@
+## 23.10.2024
+
+- Změnit možná optimalizační funkci jen na řez.
+- Donutit aby vrcholy absorbovali tok souvisle.
+- Protipříklad na optimalizaci $x_e + z_e$ je pomocí grafu $P_3$ a prostřední má vysoký degree, kde $k = 2$. Potom se vyplatí prostřední vrchol nepřidat na $S$.
+
 ## 2.10.2024
 
 - Zopakovat si téma a osvěžit paměť.
