@@ -13,28 +13,26 @@
 \usepackage{tcolorbox}
 \usepackage{hyperref}
 
-\newtcolorbox{problem}[1]{
-	colframe=RoyalBlue,
-	fonttitle=\bfseries,
-	title={#1.},
-	center title}
+\usepackage{amsthm}
 
-\newtcolorbox{observation}[1]{
-	colframe=RedOrange,
-	fonttitle=\bfseries,
-	title={#1.},
-	center title}
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}
+\newtheorem{lemma}[thm]{Lemma}
+\newtheorem{claim}[thm]{Claim}
+\newtheorem{observ}[thm]{Observation}
+
+\theoremstyle{plain}
+\newtheorem{defn}{Definition}
+\newtheorem{problem}{Problem}
+
+\theoremstyle{remark}
+\newtheorem*{cor}{Corollary}
+\newtheorem*{rem}{Remark}
+\newtheorem*{example}{Example}
 
 \newtcolorbox{todo}{
-	colframe=Plum,
 	fonttitle=\bfseries,
 	title={TODO},
-	center title}
-
-\newtcolorbox{defn}[1]{
-	colframe=SeaGreen,
-	fonttitle=\bfseries,
-	title={Definition (#1)},
 	center title}
 
 \title{Notes on connected cuts}
@@ -72,7 +70,7 @@
 	
 	Let us now define few of these problems.
 	
-	\begin{problem}{Connected $s-t$ cut}
+	\begin{problem}[Connected $s-t$ cut]
 		For a connected graph $G = (V,E)$ and vertices $s,t \in V$ such that $s\neq t$ we define \textit{connected $s-t$ cut} as $S \subseteq V$ for which all following properties hold:
 		
 		\begin{enumerate}
@@ -84,7 +82,7 @@
 	
 	Note that the size of this cut is defined as $E(S, V \setminus S)$. (Where $E(X,Y)$ is for the number of edges between sets $X$ and $Y$.)
 	
-	\begin{problem}{Multi-way connected cut}
+	\begin{problem}[Multi-way connected cut]
 		For a connected graph $G = (V,E)$ and vertices $s_1, s_2, \dots, s_k \in V$ for $k \in \mathbb{N}$ ("sources") we define connected cut as partition $\mathcal{V} = \{V_1, V_2, \dots, V_k\}$ of vertices (that is $\bigcup_{i = 1, \dots, k} V_i = V$ and for $i \neq j$ $V_i \cap V_j = \emptyset$) such that the following holds:
 		
 		\begin{enumerate}
@@ -108,7 +106,7 @@
 	
 	\section{Other cuts}
 	
-	\begin{problem}{$k$-connected cut}
+	\begin{problem}[$k$-connected cut]
 		For a connected graph $G = (V,E)$ we say $S \subseteq V$ is \textit{$k$ connected cut} such that all properties hold:
 		
 		\begin{enumerate}
@@ -125,7 +123,7 @@
 	
 	We will be now talking about an absorptive flow. Firstly we will state the problem in a common sense. For a graph and a source we get a flow which flows through the graph and every time it goes through a vertex some of the flow gets absorbed into it. After that we will define a cut which is induced by such flow and later on state an integer program and its linear approximation. Now we properly state the instance.
 	
-	\begin{defn}{Absorptive flow}
+	\begin{defn}[Absorptive flow]
 		For a graph $G = (V,E)$ and a vertex $s \in V$, also called as the \textit{source}, and for $k \in \mathbb{N}$, such that $|V| \geq k$, we define \textbf{absorptive flow} as a tuple of functions denoted as $f = (f_V, f_E)$, where $f_V : V \to \mathbb{R}$ and $f_E : E \to \mathbb{R}$. Now these two function must have these properties.
 		
 		\begin{enumerate}
@@ -209,15 +207,15 @@
 	
 	Lets talk about some crucial properties of this integer program.
 		
-	\begin{observation}{Vertices always absorb}
+	\begin{observ}[Vertices always absorb]
 		Imagine that there is a vertex over which the flow is going and yet the vertex is not absorbing nothing from the flow. By seting the absorbption value of the vertex to one we will decrease the function value by (at least) one. But since it is the optimal value, then it must be increased by at least 2. And also we know that the $x_e$ values did not increased in any way it must happend that $z_e$ values got increased. Therefore there are two edges which became cut edges. Due to the fact, that we decreased the length of the flow and not increased we must say that both of them were occupied by a flow, but that is not possible, because the increse of values are in this state: $x_e < z_e$. Therefore every vertex always absorb the flow if that is possible.
-	\end{observation}
+	\end{observ}
 	
-	\begin{observation}{Minimality of a cut}
+	\begin{observ}[Minimality of a cut]
 		Now what if there are multiple optimal solutions where some of $x_e$ and $z_e$ are exchanged?
 		
 		Because we generaly want to minimize the cut.
-	\end{observation}
+	\end{observ}
 	
 	\begin{todo}
 		Firstly observe that every time the flow goes through vertex some of its flow gets absorbed. This is always true if the function itself would be just $\min x_e$. In integer program we have only three kinds of edges. Either its inside the flow, on the cut or outside. Now see that if we would set $x_v = 0$ for some $V \in V$ even though there is a flow over it. Then we have to add $1$ to some $x_e$.
