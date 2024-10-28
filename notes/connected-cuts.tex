@@ -63,12 +63,14 @@
 	
 	\tableofcontents
 	
+	\section{Preliminaries}
+	
+	We define graph $G = (V,E)$ as usual. Then we talk about edges defined by a cut in the following way. For $S \subseteq V$ we define $E(S, V \setminus S) = \{e \in E \text{ s.t. } |e \cap S| = 1\}$, then the size of a cut is $e(S, V \setminus S) = |E(S, V \setminus S)$. Also the induced subgraph will be denoted as $G[S]$ for some vertices $S \subseteq V$.
+	
 	
 	\section{Basic cuts}
 	
-	In these notes we will define few problems which may be or not know to others. All of these problems have some properties in common. Mostly that we are going to talk about cuts which are supposed to be connected. To be precise one or all of the parts induces connected subgraphs.
-	
-	Let us now define few of these problems.
+	In these notes we will define few problems which may be or not know to others. All of these problems have some properties in common. Mostly that we are going to talk about cuts which are supposed to be connected. To be precise one or all of the parts induces connected subgraphs. Let us now define few of these problems.
 	
 	\begin{problem}[Connected $s-t$ cut]
 		For a connected graph $G = (V,E)$ and vertices $s,t \in V$ such that $s\neq t$ we define \textit{connected $s-t$ cut} as $S \subseteq V$ for which all following properties hold:
