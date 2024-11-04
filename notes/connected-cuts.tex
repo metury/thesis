@@ -12,7 +12,7 @@
 \usepackage[dvipsnames]{xcolor}
 \usepackage{fontawesome5}
 \usepackage{hyperref}
-\hypersetup{colorlinks=true, linkcolor=NavyBlue}
+\hypersetup{colorlinks=true, linkcolor=OrangeRed}
 
 \theoremstyle{plain}
 \newtheorem{thm}{Theorem}
@@ -32,15 +32,6 @@
 \title{Notes on connected cuts}
 \author{Tomáš Turek}
 \date{\today}
-
-
-%Řešení souvislosti:
-%
-%Součet přes sousedy je aspoň jako samotná hodnota. Neboli "součet je aspoň 2".
-%
-%To nezanechá souvislost celkovou, protože můžou být jen dva vrcholy, který se navzájem verifikují.
-%
-%Ale můžeme vzít to, že je větší jak naškálováná velikost toku.
 
 \begin{document}
 	\maketitle
@@ -185,20 +176,21 @@
 	Now we need to state the constraints. Firstly set the connection between the absorbed vertices and the cut.
 	
 	$$
-	\begin{array}{c}
-		x_{uv} \geq f_u - f_v \\
-		x_{uv} \geq f_v - f_u
+	\begin{array}{r l}
+		x_{uv} \geq f_u - f_v & \forall \{uv\} \in E\\
+		x_{uv} \geq f_v - f_u & \forall \{uv\} \in E
 	\end{array}
 	$$
 	
-	Next we have to set the flow, so its properties hold.
+	Which is basically that $x_{uv} \geq |f_u - f_v|$. Next we have to set the flow, so its properties hold.
 	
 	$$
 	\begin{array}{r l}
 		\sum_{v \in V, sv \in E} f_{sv} = k-1 \\
 		f_s = 1 \\
 		\sum_{u \in V, uv \in E} f_{uv} = \sum_{u \in V, vu \in E} f_{vu} + f_v & \forall v \in V, s \neq v \\
-		\sum_{u \in V} f_u = k
+		\sum_{u \in V} f_u = k \\
+		f_{v} \geq \frac{1}{\deg(v) \cdot(k-1)} \sum_{u \in V, \{uv\} \in E} f_{uv} & \forall v \in V \setminus \{s\}
 	\end{array}
 	$$
 	
@@ -207,10 +199,50 @@
 	Lastly the optimization function will be to minimize the flow throughput and number of cut edges.
 	
 	$$
-	\min \sum_{e \in E} x_e + \Delta f_e
+	\min \sum_{e \in E} x_e %+ \Delta f_e
 	$$
+	
+	\subsection{The whole formulation}
+	
+	\begin{equation}
+		\begin{array}{r l}
+			\min \sum_{e \in E} x_e \\
+			x_{uv} \geq f_u - f_v & \forall \{uv\} \in E\\
+			x_{uv} \geq f_v - f_u & \forall \{uv\} \in E\\
+			\sum_{v \in V, sv \in E} f_{sv} = k-1 \\
+			f_s = 1 \\
+			\sum_{u \in V, uv \in E} f_{uv} = \sum_{u \in V, vu \in E} f_{vu} + f_v & \forall v \in V, s \neq v \\
+			\sum_{u \in V} f_u = k \\
+			f_{v} \geq \frac{1}{\deg(v) \cdot(k-1)} \sum_{u \in V, \{uv\} \in E} f_{uv} & \forall v \in V \setminus \{s\} \\
+			f_v \in \{0,1\} & \forall v \in V \\
+			f_{uv} \in \mathbb{R}^+ & \forall \{u,v\} \in E \\
+			x_{uv} \in \{0,1\} & \forall \{u,v\} \in E
+		\end{array}
+	\end{equation}
 	
 	\subsection{Properties}
 	
 	Lets talk about some crucial properties of this integer program.
+	
+	\begin{observ}
+		Every vertex in the flow absorb.
+	\end{observ}
+
+	\begin{proof}
+		See that due to the last constraint whenever a flow goes inside the vertex we must set the vertex to absorb some portion of the flow. Exactly 1 in the case of integer program.
+	\end{proof}
+
+	\begin{observ}
+		$f_V$ defines a connected induced subgraph of $G$.
+	\end{observ}
+
+	\begin{proof}
+		Since $f_s = 1$ we know that $s$ is inside the $G[S]$. For contradiction assume there is a vertex $v \in S$ which is not connected to the source $s$. Because $f_v = 1$ we must have that there is a flow over this vertex due to the fifth constraint. And since there is a flow to the vertex $v$ which starts in $s$ there is also a walk from $s$ to $v$, therefore no such vertex $v$ exists and all vertices are connected to $s$ and hence they induce connected subgraph.
+	\end{proof}
+
+	\begin{observ}
+		We have a minimum connected $s$ cut from the optimal integer value of the lp formulation $x^\ast$.
+	\end{observ}
+
+	Now it is also a time to talk about integrality, moreover what will happen if we switch to lp relaxation.
 \end{document}
