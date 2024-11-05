@@ -12,6 +12,9 @@
 \usepackage[dvipsnames]{xcolor}
 \usepackage{fontawesome5}
 \usepackage{hyperref}
+\usepackage{tikz}
+\usepackage{caption}
+\usepackage{subcaption}
 \hypersetup{colorlinks=true, linkcolor=OrangeRed}
 
 \theoremstyle{plain}
@@ -245,4 +248,138 @@
 	\end{observ}
 
 	Now it is also a time to talk about integrality, moreover what will happen if we switch to lp relaxation.
+	
+	\subsection{Example}
+	
+	Now consider a simple example of a graph $G$ which is depicted on picture \ref{star-graph}. It is a so called star, where $v$ is the center point with $\Delta$ neighbors. In this special instance $s$ is already provided, now we need to set $k = 2$.
+	
+	\begin{figure}[!ht]\centering
+		\begin{tikzpicture}[main/.style = {draw, circle, inner sep=1.5pt}]
+			\node[main] (s) at (0,0) {$s$};
+			\node[main] (v) at (3,0) {$v$};
+			\node[main] (u) at (6,0) {$u$};
+			\node[main] (3) at (3,3) {};
+			\node[main] (1) at (1,2) {};
+			\node[main] (2) at (2,2.5) {};
+			\node[main] (5) at (5,2) {};
+			\draw[dotted] (3) to (5);
+			
+			\draw (s) -- (v);
+			\draw (v) -- (u);
+			\draw (v) -- (1);
+			\draw (v) -- (2);
+			\draw (v) -- (3);
+			\draw (v) -- (5);
+		\end{tikzpicture}
+		\caption{Star graph $G$ with special vertices $v,s$ and $u$.}
+		\label{star-graph}
+	\end{figure}
+
+	We can easily observe that the optimal solution of such connected $s$ cut is by setting $S = \{s,v\}$ since if $s \in S$ and $G[S]$ has to be connected we can only choose $v$, so that also $|S| = k = 2$. But mainly we are interested in observing how will the integer or linear relaxation of our program work on such instance.
+	
+	\begin{observ}
+		Integer linear program will find the optimal solution.
+	\end{observ}
+
+	\begin{proof}
+		See that $f(s) = 1$ and $f(sv) = 1$ thus $f(v) \geq \frac{1}{\Delta (2-1)} 1 = \frac{1}{\Delta}$. From the property that we have integer variables $f(v)$ must be 1. And hence we absorbed the whole flow and satisfied all constraints. Also the solution can be seen on the picture \ref{star-graph-ilp}.
+	\end{proof}
+
+	\begin{figure}[!ht]\centering
+		\begin{tikzpicture}[main/.style = {draw, circle, inner sep=1.5pt},
+			flow/.style = {Salmon},
+			cut/.style = {dashed, PineGreen}]
+			\node[main,flow] (s) at (0,0) {$1$};
+			\node[main,flow] (v) at (3,0) {$1$};
+			\node[main] (u) at (6,0) {$u$};
+			\node[main] (3) at (3,3) {};
+			\node[main] (1) at (1,2) {};
+			\node[main] (2) at (2,2.5) {};
+			\node[main] (5) at (5,2) {};
+			\draw[dotted] (3) to (5);
+			
+			\draw[flow, ->, thick] (s) -- (v) node[midway, above] {$1$};
+			\draw[cut] (v) -- (u) node[midway, above] {$1$};
+			\draw[cut] (v) -- (1) node[midway, above, right] {$1$};
+			\draw[cut] (v) -- (2) node[midway, above, right] {$1$};
+			\draw[cut] (v) -- (3) node[midway, right] {$1$};
+			\draw[cut] (v) -- (5) node[midway, above left] {$1$};
+		\end{tikzpicture}
+		\caption{Absorbing flow of the integer program.}
+		\label{star-graph-ilp}
+	\end{figure}
+
+	\begin{observ}
+		Linear relaxation will provide a solution with $S = V$ and $x_e > 0$ only for edge $sv$. 
+	\end{observ}
+
+	\begin{proof}
+		The starting point is the same as in previous case, that is $f(s) = 1$ and $f(sv) = 1$. Then we have that $f(v) \geq \frac{1}{\Delta}$. Now suppose that all $N[v] \setminus s$ will have the same value of $f$. So that the cut edge will be only one $sv$.
+		
+		Firstly we must see that this is indeed possible. What if we set $f(vx) = \frac{1}{\Delta}$ for all such neighbors $x \in N[v] \setminus s$, and also $f(x) = \frac{1}{\Delta}$. We have to check if such solution is indeed feasible. Lets sum all
+		
+		$$
+		\sum_{v \in V} f(v) = f(s) + \sum_{v \in V \setminus s} f(v) = 1 + \sum_{v \in V \setminus s} \frac{1}{\Delta} = 1 + (1 + \Delta - 1) \frac{1}{\Delta} = 1 + \frac{\Delta}{\Delta} = 2
+		$$
+		
+		Therefore we have satisfied the constrained of $k$ chosen vertices. Also we can see that the other properties still indeed hold, which are not so hard. For example the flow follow its restrictions. And we have the found the solution given in this observation and shown that it is feasible. The solution is shown on the picture \ref{star-graph-lp}. Now the value of the optimization function is $1 - \frac{1}{\Delta} = \frac{\Delta - 1}{\Delta}$, which $\frac{1}{\Delta}$ times less then the OPT.
+		
+		Lastly we have to see that this is indeed optimal. What can be changed? Only the value of $f(v)$ and flows from vertex $v$. Suppose we would move $\lambda$ back from $u$ to $v$. This will increase $f(v)$ to $\frac{1}{\Delta} + \lambda$ and decreased both $f(u)$ and $f(vu)$ by $\lambda$. This will decrease $x(sv)$ by $\lambda$ and increased $f(vx)$ by $\lambda$ for all neighbors of $v$ without $u,s$. Because for $x(vu)$ we will now have $2 \lambda$ so in total we haven't made a better solution. We would need to split $\lambda$ amongst all $\Delta -2$ such neighbors. But then we will again increase $x(sv)$, so we are in a dead end. All other cases are similar.
+	\end{proof}
+
+	\begin{figure}[!ht]\centering
+		\begin{subfigure}{.4\textwidth}\centering
+			\begin{tikzpicture}[main/.style = {draw, circle, inner sep=1.5pt},
+				flow/.style = {Salmon},
+				cut/.style = {dashed, PineGreen}]
+				\node[main,flow] (s) at (0,0) {$1$};
+				\node[main,flow] (v) at (3,0) {$\frac{1}{\Delta}$};
+				\node[main, flow] (u) at (6,0) {$\frac{1}{\Delta}$};
+				\node[main, flow] (3) at (3,3) {$\frac{1}{\Delta}$};
+				\node[main, flow] (1) at (1,2) {$\frac{1}{\Delta}$};
+				\node[main, flow] (2) at (2,2.5) {$\frac{1}{\Delta}$};
+				\node[main, flow] (5) at (5,2) {$\frac{1}{\Delta}$};
+				\draw[dotted, flow] (3) to (5);
+				
+				\draw[flow, ->, thick] (s) -- (v) node[midway, above] {$1$};
+				\draw[flow, ->, thick] (v) -- (u) node[midway, above] {$\frac{1}{\Delta}$};
+				\draw[flow, ->, thick] (v) -- (1) node[midway, above, right] {$\frac{1}{\Delta}$};
+				\draw[flow, ->, thick] (v) -- (2) node[midway, above, right] {$\frac{1}{\Delta}$};
+				\draw[flow, ->, thick] (v) -- (3) node[midway, right] {$\frac{1}{\Delta}$};
+				\draw[flow, ->, thick] (v) -- (5) node[midway, above left] {$\frac{1}{\Delta}$};
+				\draw[cut, thick] (s) -- (v) node[midway, below] {$\frac{\Delta - 1}{\Delta}$};
+			\end{tikzpicture}
+		\end{subfigure}
+		\begin{subfigure}{.4\textwidth}\centering
+			\begin{tikzpicture}[main/.style = {draw, circle, inner sep=1.5pt},
+				flow/.style = {Salmon},
+				cut/.style = {dashed, PineGreen}]
+				\node[main,flow] (s) at (0,0) {$1$};
+				\node[main,flow] (v) at (3,0) {$\frac{1}{\Delta} + \lambda$};
+				\node[main, flow] (u) at (6,0) {$\frac{1}{\Delta} - \lambda$};
+				\node[main, flow] (3) at (3,3) {$\frac{1}{\Delta}$};
+				\node[main, flow] (1) at (1,2) {$\frac{1}{\Delta}$};
+				\node[main, flow] (2) at (2,2.5) {$\frac{1}{\Delta}$};
+				\node[main, flow] (5) at (5,2) {$\frac{1}{\Delta}$};
+				\draw[dotted, flow] (3) to (5);
+				
+				\draw[flow, ->, thick] (s) -- (v) node[midway, above] {$1$};
+				\draw[flow, ->, thick] (v) -- (u) node[midway, above] {$\frac{1}{\Delta} - \lambda$};
+				\draw[cut, thick] (v) -- (u) node[midway,below] {$2\lambda$};
+				\draw[flow, ->, thick] (v) -- (1) node[midway, above, right] {$\frac{1}{\Delta}$};
+				\draw[flow, ->, thick] (v) -- (2) node[midway, above, right] {$\frac{1}{\Delta}$};
+				\draw[flow, ->, thick] (v) -- (3) node[midway, right] {$\frac{1}{\Delta}$};
+				\draw[flow, ->, thick] (v) -- (5) node[midway, above left] {$\frac{1}{\Delta}$};
+				\draw[cut, thick] (s) -- (v) node[midway, below] {$\frac{\Delta - 1}{\Delta}- \lambda$};
+				\draw[cut, thick] (v) -- (1) node[near end, above, right] {$\lambda$};
+				\draw[cut, thick] (v) -- (2) node[near end, above, right] {$\lambda$};
+				\draw[cut, thick] (v) -- (3) node[near end, right] {$\lambda$};
+				\draw[cut, thick] (v) -- (5) node[near end, above left] {$\lambda$};
+			\end{tikzpicture}
+		\end{subfigure}
+		
+		\caption{Absorbing flow of the linear relaxation.}
+		\label{star-graph-lp}
+	\end{figure}
+	
 \end{document}
