@@ -1,4 +1,5 @@
-use petgraph::graph::{UnGraph};
+use petgraph::graph::UnGraph;
+use petgraph::visit::EdgeRef;
 use regex::Regex;
 use std::fs;
 
@@ -30,11 +31,40 @@ fn read_file(filepath: &str) -> Graph {
 /// Create linear program.
 fn create_lp(ilp: bool, inst: &Instance) {
     let g = &inst.g;
+    println!("Minimize");
     for e in g.edge_indices() {
         if let Some((from, to)) = g.edge_endpoints(e) {
-            println!("From {:?} to {:?}", from, to);
+            print!("x_{0}_{1} + x_{1}_{0} + ", from.index(), to.index());
         }
     }
+    println!("0");
+    println!("Subject to");
+
+    for e in g.edge_indices() {
+        if let Some((from, to)) = g.edge_endpoints(e) {
+            println!("x_{0}_{1} - f_{0} + f_{1} >= 0", from.index(), to.index());
+            println!("x_{0}_{1} - f_{1} + f_{0} >= 0", from.index(), to.index());
+            println!("x_{1}_{0} - f_{0} + f_{1} >= 0", from.index(), to.index());
+            println!("x_{1}_{0} - f_{1} + f_{0} >= 0", from.index(), to.index());
+        }
+    }
+
+    for e in g.edges(inst.s.into()) {
+        let from = e.source().index();
+        let to = e.target().index();
+        if from == inst.s as usize {
+            print!("f_{}_{} + ", inst.s, to);
+        } else {
+            print!("f_{}_{} + ", inst.s, from);
+        }
+    }
+    println!("1 - {} = 0", inst.k);
+
+    println!("f_{} = 1", inst.s);
+
+    println!("");
+    println!("======");
+
     for v in g.node_indices() {
         println!("Adjecent edges to vertex {:?}:", v);
         for e in g.edges(v){
@@ -47,6 +77,6 @@ fn create_lp(ilp: bool, inst: &Instance) {
 fn main() {
     println!("Hello, world!");
     let g = read_file("test");
-    let inst = Instance {g: g, k: 4, s: 0};
+    let inst = Instance {g: g, k: 4, s: 1};
     create_lp(false, &inst);
 }
