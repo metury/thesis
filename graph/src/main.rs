@@ -2,7 +2,15 @@ use petgraph::graph::{UnGraph};
 use regex::Regex;
 use std::fs;
 
+/// Shorter type for graph.
 type Graph = UnGraph<(),()>;
+
+/// Strucutre for minimum k connected cut.
+struct Instance {
+    g: Graph,
+    k: u32,
+    s: u32,
+}
 
 /// Read graph from file which is provided via a filpeath.
 /// Considered format of a graph is by giving out edges in a from [idfrom;idto].
@@ -19,10 +27,17 @@ fn read_file(filepath: &str) -> Graph {
     UnGraph::<(), ()>::from_edges(&raw_edges)
 }
 
-fn create_lp(ilp: bool, G: &Graph) {
-    for v in G.node_indices() {
+/// Create linear program.
+fn create_lp(ilp: bool, inst: &Instance) {
+    let g = &inst.g;
+    for e in g.edge_indices() {
+        if let Some((from, to)) = g.edge_endpoints(e) {
+            println!("From {:?} to {:?}", from, to);
+        }
+    }
+    for v in g.node_indices() {
         println!("Adjecent edges to vertex {:?}:", v);
-        for e in G.edges(v){
+        for e in g.edges(v){
             println!("\t{:?}", e);
         }
     }
@@ -31,7 +46,7 @@ fn create_lp(ilp: bool, G: &Graph) {
 /// Main function of the program.
 fn main() {
     println!("Hello, world!");
-    let G = read_file("test");
-    println!("{:?}", G);
-    create_lp(false, &G);
+    let g = read_file("test");
+    let inst = Instance {g: g, k: 4, s: 0};
+    create_lp(false, &inst);
 }
