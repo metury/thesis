@@ -15,6 +15,7 @@ struct Instance {
 
 /// Read graph from file which is provided via a filpeath.
 /// Considered format of a graph is by giving out edges in a from [idfrom;idto].
+/// Also the file itself has source vertex and the number k.
 fn read_file(filepath: &str) -> Instance {
     let contents = fs::read_to_string(filepath).unwrap();
 
@@ -36,15 +37,21 @@ fn read_file(filepath: &str) -> Instance {
 }
 
 /// Create linear program.
+/// ilp is for integer linear program.
 fn create_lp(ilp: bool, inst: &Instance) {
     let g = &inst.g;
+    let mut first = true;
     println!("Minimize");
     for e in g.edge_indices() {
+        if !first {
+            print!(" + ");
+        }
+        first = false;
         if let Some((from, to)) = g.edge_endpoints(e) {
-            print!("x_{0}_{1} + x_{1}_{0} + ", from.index(), to.index());
+            print!("x_{0}_{1} + x_{1}_{0}", from.index(), to.index());
         }
     }
-    println!("0");
+    println!("");
     println!("Subject to");
 
     // Defining the cut x.
@@ -58,16 +65,21 @@ fn create_lp(ilp: bool, inst: &Instance) {
     }
 
     // The sum of the outgoing flow from s is k-1.
+    first = true;
     for e in g.edges(inst.s.into()) {
         let from = e.source().index();
         let to = e.target().index();
+        if !first {
+            print!(" + ");
+        }
+        first = false;
         if from == inst.s as usize {
-            print!("f_{}_{} + ", inst.s, to);
+            print!("f_{}_{}", inst.s, to);
         } else {
-            print!("f_{}_{} + ", inst.s, from);
+            print!("f_{}_{}", inst.s, from);
         }
     }
-    println!("1 - {} = 0", inst.k);
+    println!(" = {}", inst.k - 1);
 
     // f_s = 1
     println!("f_{} = 1", inst.s);
@@ -83,29 +95,34 @@ fn create_lp(ilp: bool, inst: &Instance) {
                     print!("f_{0}_{1} - f_{1}_{0} + ", from.index(), v.index());
                 }
             }
+            println!("f_{} = 0", v.index());
         }
-        println!("f_{} = 0", v.index());
     }
 
     // Choose k vertices.
+    first = true;
     for v in g.node_indices() {
-        print!("f_{} + ", v.index());
+        if !first {
+            print!(" + ");
+        }
+        first = false;
+        print!("f_{}", v.index());
     }
-    println!("0 - {}", inst.k);
+    println!(" = {}", inst.k);
 
     // Force the absorption.
     for v in g.node_indices() {
         if v != inst.s.into() {
-            print!("0 ");
+            print!("f_{} ", v.index());
             for e in g.edges(v) {
                 let (from, to) = (e.source(), e.target());
                 if from == v {
-                    print!("- 1/{} f_{}_{}", inst.k, to.index(), v.index())
+                    print!(" - 1/{} f_{}_{}", inst.k, to.index(), v.index())
                 } else {
-                    print!("- 1/{} f_{}_{}", inst.k, from.index(), v.index())
+                    print!(" - 1/{} f_{}_{}", inst.k, from.index(), v.index())
                 }
             }
-            println!("+ f_{} >= 0", v.index());
+            println!(" >= 0");
         }
     }
 
@@ -117,8 +134,8 @@ fn create_lp(ilp: bool, inst: &Instance) {
 
     for e in g.edge_indices() {
         if let Some((from, to)) = g.edge_endpoints(e) {
-            println!("0 <= f_{}_{}", from.index(), to.index());
-            println!("0 <= f_{}_{}", to.index(), from.index());
+            println!("f_{}_{} => 0", from.index(), to.index());
+            println!("f_{}_{} => 0", to.index(), from.index());
             println!("0 <= x_{}_{} <= 1", from.index(), to.index());
             println!("0 <= x_{}_{} <= 1", to.index(), from.index());
         }
@@ -144,7 +161,7 @@ fn create_lp(ilp: bool, inst: &Instance) {
 fn complete_graph(n: u32) -> Graph {
     let mut raw_edges: Vec<(u32, u32)> = vec![];
     for i in 0..n {
-        for j in i..n {
+        for j in (i+1)..n {
             raw_edges.push((i,j));
         }
     }
@@ -153,6 +170,7 @@ fn complete_graph(n: u32) -> Graph {
 
 /// Main function of the program.
 fn main() {
-    let inst = read_file("test");
+    //let inst = read_file("test");
+    let inst = Instance{g: complete_graph(10), s: 0, k: 3};
     create_lp(false, &inst);
 }
