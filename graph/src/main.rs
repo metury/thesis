@@ -15,17 +15,24 @@ struct Instance {
 
 /// Read graph from file which is provided via a filpeath.
 /// Considered format of a graph is by giving out edges in a from [idfrom;idto].
-fn read_file(filepath: &str) -> Graph {
+fn read_file(filepath: &str) -> Instance {
     let contents = fs::read_to_string(filepath).unwrap();
 
     let edge_regex = Regex::new(r"\[\s*([0-9]*)\s*;\s*([0-9]*)\s*\]").unwrap();
+    let s_rgx = Regex::new(r"s\s*=\s*([0-9]+)");
+    let k_rgx = Regex::new(r"k\s*=\s*([0-9]+)");
+
     let mut raw_edges: Vec<(u32,u32)> = vec![];
 
     for (_, [id_from, id_to]) in edge_regex.captures_iter(&contents).map(|c| c.extract()) {
         raw_edges.push((id_from.parse().unwrap(), id_to.parse().unwrap()));
     }
 
-    UnGraph::<(), ()>::from_edges(&raw_edges)
+    let g = UnGraph::<(), ()>::from_edges(&raw_edges);
+    let s: u32 = (&s_rgx.expect("REASON").captures(&contents).unwrap()[1]).parse().unwrap();
+    let k: u32 = (&k_rgx.expect("REASON").captures(&contents).unwrap()[1]).parse().unwrap();
+
+    Instance {g, k, s}
 }
 
 /// Create linear program.
@@ -146,7 +153,6 @@ fn complete_graph(n: u32) -> Graph {
 
 /// Main function of the program.
 fn main() {
-    let g = read_file("test");
-    let inst = Instance {g: g, k: 4, s: 1};
+    let inst = read_file("test");
     create_lp(false, &inst);
 }
