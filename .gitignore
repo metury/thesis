@@ -26,6 +26,7 @@
 
 *.lp
 *.ilp
+*.sol
 *.log
 
 ## Bibliography auxiliary files (bibtex/biblatex/biber):

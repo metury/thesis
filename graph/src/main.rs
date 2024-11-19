@@ -86,16 +86,21 @@ fn create_lp(ilp: bool, inst: &Instance) {
 
     // The flow is correct.
     for v in g.node_indices() {
+        first = true;
         if v != inst.s.into() {
             for e in g.edges(v) {
+                if !first {
+                    print!(" + ");
+                }
+                first = false;
                 let (from, to) = (e.source(), e.target());
                 if from == v {
-                    print!("f_{0}_{1} - f_{1}_{0} + ", to.index(), v.index());
+                    print!("f_{0}_{1} - f_{1}_{0}", to.index(), v.index());
                 } else {
-                    print!("f_{0}_{1} - f_{1}_{0} + ", from.index(), v.index());
+                    print!("f_{0}_{1} - f_{1}_{0}", from.index(), v.index());
                 }
             }
-            println!("f_{} = 0", v.index());
+            println!(" - f_{} = 0", v.index());
         }
     }
 
@@ -113,7 +118,7 @@ fn create_lp(ilp: bool, inst: &Instance) {
     // Force the absorption.
     for v in g.node_indices() {
         if v != inst.s.into() {
-            print!("f_{} ", v.index());
+            print!("f_{}", v.index());
             for e in g.edges(v) {
                 let (from, to) = (e.source(), e.target());
                 if from == v {
@@ -134,8 +139,8 @@ fn create_lp(ilp: bool, inst: &Instance) {
 
     for e in g.edge_indices() {
         if let Some((from, to)) = g.edge_endpoints(e) {
-            println!("f_{}_{} => 0", from.index(), to.index());
-            println!("f_{}_{} => 0", to.index(), from.index());
+            println!("f_{}_{} >= 0", from.index(), to.index());
+            println!("f_{}_{} >= 0", to.index(), from.index());
             println!("0 <= x_{}_{} <= 1", from.index(), to.index());
             println!("0 <= x_{}_{} <= 1", to.index(), from.index());
         }
@@ -171,6 +176,6 @@ fn complete_graph(n: u32) -> Graph {
 /// Main function of the program.
 fn main() {
     //let inst = read_file("test");
-    let inst = Instance{g: complete_graph(10), s: 0, k: 3};
+    let inst = Instance{g: complete_graph(500), s: 0, k: 3};
     create_lp(false, &inst);
 }
