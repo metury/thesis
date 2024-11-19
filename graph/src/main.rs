@@ -40,6 +40,7 @@ fn create_lp(ilp: bool, inst: &Instance) {
     println!("0");
     println!("Subject to");
 
+    // Defining the cut x.
     for e in g.edge_indices() {
         if let Some((from, to)) = g.edge_endpoints(e) {
             println!("x_{0}_{1} - f_{0} + f_{1} >= 0", from.index(), to.index());
@@ -49,6 +50,7 @@ fn create_lp(ilp: bool, inst: &Instance) {
         }
     }
 
+    // The sum of the outgoing flow from s is k-1.
     for e in g.edges(inst.s.into()) {
         let from = e.source().index();
         let to = e.target().index();
@@ -60,22 +62,79 @@ fn create_lp(ilp: bool, inst: &Instance) {
     }
     println!("1 - {} = 0", inst.k);
 
+    // f_s = 1
     println!("f_{} = 1", inst.s);
 
-    println!("");
-    println!("======");
-
+    // The flow is correct.
     for v in g.node_indices() {
-        println!("Adjecent edges to vertex {:?}:", v);
-        for e in g.edges(v){
-            println!("\t{:?}", e);
+        if v != inst.s.into() {
+            for e in g.edges(v) {
+                let (from, to) = (e.source(), e.target());
+                if from == v {
+                    print!("f_{0}_{1} - f_{1}_{0} + ", to.index(), v.index());
+                } else {
+                    print!("f_{0}_{1} - f_{1}_{0} + ", from.index(), v.index());
+                }
+            }
+        }
+        println!("f_{} = 0", v.index());
+    }
+
+    // Choose k vertices.
+    for v in g.node_indices() {
+        print!("f_{} + ", v.index());
+    }
+    println!("0 - {}", inst.k);
+
+    // Force the absorption.
+    for v in g.node_indices() {
+        if v != inst.s.into() {
+            print!("0 ");
+            for e in g.edges(v) {
+                let (from, to) = (e.source(), e.target());
+                if from == v {
+                    print!("- 1/{} f_{}_{}", inst.k, to.index(), v.index())
+                } else {
+                    print!("- 1/{} f_{}_{}", inst.k, from.index(), v.index())
+                }
+            }
+            println!("+ f_{} >= 0", v.index());
         }
     }
+
+    println!("Bounds");
+
+    for v in g.node_indices() {
+        println!("0 <= f_{} <= 1", v.index());
+    }
+
+    for e in g.edge_indices() {
+        if let Some((from, to)) = g.edge_endpoints(e) {
+            println!("0 <= f_{}_{}", from.index(), to.index());
+            println!("0 <= f_{}_{}", to.index(), from.index());
+            println!("0 <= x_{}_{} <= 1", from.index(), to.index());
+            println!("0 <= x_{}_{} <= 1", to.index(), from.index());
+        }
+    }
+
+    if ilp {
+        println!("Generals");
+        for v in g.node_indices() {
+            print!("f_{} ", v.index());
+        }
+        for e in g.edge_indices() {
+            if let Some((from, to)) = g.edge_endpoints(e) {
+                print!("x_{0}_{1} x_{1}_{0} ", from.index(), to.index());
+            }
+        }
+        println!("");
+    }
+
+    println!("End");
 }
 
 /// Main function of the program.
 fn main() {
-    println!("Hello, world!");
     let g = read_file("test");
     let inst = Instance {g: g, k: 4, s: 1};
     create_lp(false, &inst);
