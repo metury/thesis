@@ -133,6 +133,17 @@ fn create_lp(ilp: bool, inst: &Instance) {
     println!("End");
 }
 
+/// Create a complete graph with n vertices.
+fn complete_graph(n: u32) -> Graph {
+    let mut raw_edges: Vec<(u32, u32)> = vec![];
+    for i in 0..n {
+        for j in i..n {
+            raw_edges.push((i,j));
+        }
+    }
+    UnGraph::<(), ()>::from_edges(&raw_edges)
+}
+
 /// Main function of the program.
 fn main() {
     let g = read_file("test");
