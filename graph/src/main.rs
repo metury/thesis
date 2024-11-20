@@ -1,5 +1,6 @@
 use petgraph::graph::UnGraph;
 use petgraph::visit::EdgeRef;
+use clap::Parser;
 use regex::Regex;
 use std::fs;
 
@@ -11,6 +12,35 @@ struct Instance {
     g: Graph,
     k: u32,
     s: u32,
+}
+
+/// These arguments are available. You must select a job and than either provide an input file to the graph or create some graph.
+#[derive(Parser, Debug)]
+#[command(version, about, long_about = None)]
+struct Args {
+    /// What job to do: ilp, lp, apx.
+    #[arg(short, long)]
+    job: String,
+
+    /// Input file.
+    #[arg(short,long, default_value_t = String::new())]
+    inputfile: String,
+
+    /// Source vertex.
+    #[arg(short, long, default_value_t = 0)]
+    source: u32,
+
+    /// What graph to create: complete, path.
+    #[arg(short, long, default_value_t = String::new())]
+    graph: String,
+
+    /// How big the graph should be.
+    #[arg(short, default_value_t = 0)]
+    n: u32,
+
+    /// How big the connected cut should be.
+    #[arg(short, default_value_t = 0)]
+    k: u32,
 }
 
 /// Read graph from file which is provided via a filpeath.
@@ -175,7 +205,21 @@ fn complete_graph(n: u32) -> Graph {
 
 /// Main function of the program.
 fn main() {
-    //let inst = read_file("test");
-    let inst = Instance{g: complete_graph(500), s: 0, k: 3};
-    create_lp(false, &inst);
+    let args = Args::parse();
+    // Create an instance.
+    let mut inst = Instance {g: complete_graph(1), s:0, k:0};
+    if args.inputfile.len() > 0 {
+        inst = read_file(&args.inputfile);
+    } else if args.graph == "complete" {
+        inst = Instance{g: complete_graph(args.n), k: args.k, s: args.source};
+    }
+
+    // Start the job.
+    if args.job == "ilp" {
+        create_lp(true, &inst);
+    } else if args.job == "lp" {
+        create_lp(false, &inst);
+    } else if args.job == "apx" {
+
+    }
 }
