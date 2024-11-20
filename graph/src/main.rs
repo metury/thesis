@@ -208,7 +208,7 @@ fn main() {
     let args = Args::parse();
     // Create an instance.
     let mut inst = Instance {g: complete_graph(1), s:0, k:0};
-    if args.inputfile.len() > 0 {
+    if !args.inputfile.is_empty() {
         inst = read_file(&args.inputfile);
     } else if args.graph == "complete" {
         inst = Instance{g: complete_graph(args.n), k: args.k, s: args.source};
