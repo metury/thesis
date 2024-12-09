@@ -4,6 +4,7 @@ use petgraph::dot::{Dot, Config};
 use clap::Parser;
 use regex::Regex;
 use std::fs;
+use std::io::{self, Write};
 
 /// Shorter type for graph.
 type Graph = UnGraph<(),()>;
@@ -26,6 +27,10 @@ struct Args {
     /// Input file.
     #[arg(short,long, default_value_t = String::new())]
     inputfile: String,
+
+     /// Output file.
+    #[arg(short,long, default_value_t = String::new())]
+    outputfile: String,
 
     /// Source vertex.
     #[arg(short, long, default_value_t = 0)]
@@ -69,29 +74,32 @@ fn read_file(filepath: &str) -> Instance {
 
 /// Create linear program.
 /// ilp is for integer linear program.
-fn create_lp(ilp: bool, inst: &Instance) {
+fn create_lp(ilp: bool, inst: &Instance, ofile:& String) -> io::Result<()> {
     let g = &inst.g;
     let mut first = true;
-    println!("Minimize");
+
+    let mut file = fs::File::create(ofile)?;
+
+    writeln!(file, "Minimize")?;
     for e in g.edge_indices() {
         if !first {
-            print!(" + ");
+            write!(file, " + ")?;
         }
         first = false;
         if let Some((from, to)) = g.edge_endpoints(e) {
-            print!("x_{0}_{1} + x_{1}_{0}", from.index(), to.index());
+            write!(file, "x_{0}_{1} + x_{1}_{0}", from.index(), to.index())?;
         }
     }
-    println!("");
-    println!("Subject to");
+    writeln!(file, "")?;
+    writeln!(file, "Subject to")?;
 
     // Defining the cut x.
     for e in g.edge_indices() {
         if let Some((from, to)) = g.edge_endpoints(e) {
-            println!("x_{0}_{1} - f_{0} + f_{1} >= 0", from.index(), to.index());
-            println!("x_{0}_{1} - f_{1} + f_{0} >= 0", from.index(), to.index());
-            println!("x_{1}_{0} - f_{0} + f_{1} >= 0", from.index(), to.index());
-            println!("x_{1}_{0} - f_{1} + f_{0} >= 0", from.index(), to.index());
+            writeln!(file, "x_{0}_{1} - f_{0} + f_{1} >= 0", from.index(), to.index())?;
+            writeln!(file, "x_{0}_{1} - f_{1} + f_{0} >= 0", from.index(), to.index())?;
+            writeln!(file, "x_{1}_{0} - f_{0} + f_{1} >= 0", from.index(), to.index())?;
+            writeln!(file, "x_{1}_{0} - f_{1} + f_{0} >= 0", from.index(), to.index())?;
         }
     }
 
@@ -101,19 +109,19 @@ fn create_lp(ilp: bool, inst: &Instance) {
         let from = e.source().index();
         let to = e.target().index();
         if !first {
-            print!(" + ");
+            write!(file, " + ")?;
         }
         first = false;
         if from == inst.s as usize {
-            print!("f_{}_{}", inst.s, to);
+            write!(file, "f_{}_{}", inst.s, to)?;
         } else {
-            print!("f_{}_{}", inst.s, from);
+            write!(file, "f_{}_{}", inst.s, from)?;
         }
     }
-    println!(" = {}", inst.k - 1);
+    writeln!(file, " = {}", inst.k - 1)?;
 
     // f_s = 1
-    println!("f_{} = 1", inst.s);
+    writeln!(file, "f_{} = 1", inst.s)?;
 
     // The flow is correct.
     for v in g.node_indices() {
@@ -121,17 +129,17 @@ fn create_lp(ilp: bool, inst: &Instance) {
         if v != inst.s.into() {
             for e in g.edges(v) {
                 if !first {
-                    print!(" + ");
+                    write!(file, " + ")?;
                 }
                 first = false;
                 let (from, to) = (e.source(), e.target());
                 if from == v {
-                    print!("f_{0}_{1} - f_{1}_{0}", to.index(), v.index());
+                    write!(file, "f_{0}_{1} - f_{1}_{0}", to.index(), v.index())?;
                 } else {
-                    print!("f_{0}_{1} - f_{1}_{0}", from.index(), v.index());
+                    write!(file, "f_{0}_{1} - f_{1}_{0}", from.index(), v.index())?;
                 }
             }
-            println!(" - f_{} = 0", v.index());
+            writeln!(file, " - f_{} = 0", v.index())?;
         }
     }
 
@@ -139,58 +147,59 @@ fn create_lp(ilp: bool, inst: &Instance) {
     first = true;
     for v in g.node_indices() {
         if !first {
-            print!(" + ");
+            write!(file, " + ")?;
         }
         first = false;
-        print!("f_{}", v.index());
+        write!(file, "f_{}", v.index())?;
     }
-    println!(" = {}", inst.k);
+    writeln!(file, " = {}", inst.k)?;
 
     // Force the absorption.
     for v in g.node_indices() {
         if v != inst.s.into() {
-            print!("{} f_{}", inst.k - 1, v.index());
+            write!(file, "{} f_{}", inst.k - 1, v.index())?;
             for e in g.edges(v) {
                 let (from, to) = (e.source(), e.target());
                 if from == v {
-                    print!(" - f_{}_{}", to.index(), v.index())
+                    write!(file, " - f_{}_{}", to.index(), v.index())?;
                 } else {
-                    print!(" - f_{}_{}", from.index(), v.index())
+                    write!(file, " - f_{}_{}", from.index(), v.index())?;
                 }
             }
-            println!(" >= 0");
+            writeln!(file, " >= 0")?;
         }
     }
 
-    println!("Bounds");
+    writeln!(file, "Bounds")?;
 
     for v in g.node_indices() {
-        println!("0 <= f_{} <= 1", v.index());
+        writeln!(file, "0 <= f_{} <= 1", v.index())?;
     }
 
     for e in g.edge_indices() {
         if let Some((from, to)) = g.edge_endpoints(e) {
-            println!("f_{}_{} >= 0", from.index(), to.index());
-            println!("f_{}_{} >= 0", to.index(), from.index());
-            println!("0 <= x_{}_{} <= 1", from.index(), to.index());
-            println!("0 <= x_{}_{} <= 1", to.index(), from.index());
+            writeln!(file, "f_{}_{} >= 0", from.index(), to.index())?;
+            writeln!(file, "f_{}_{} >= 0", to.index(), from.index())?;
+            writeln!(file, "0 <= x_{}_{} <= 1", from.index(), to.index())?;
+            writeln!(file, "0 <= x_{}_{} <= 1", to.index(), from.index())?;
         }
     }
 
     if ilp {
-        println!("Generals");
+        writeln!(file, "Generals")?;
         for v in g.node_indices() {
-            print!("f_{} ", v.index());
+            write!(file,"f_{} ", v.index())?;
         }
         for e in g.edge_indices() {
             if let Some((from, to)) = g.edge_endpoints(e) {
-                print!("x_{0}_{1} x_{1}_{0} ", from.index(), to.index());
+                write!(file,"x_{0}_{1} x_{1}_{0} ", from.index(), to.index())?;
             }
         }
-        println!("");
+        writeln!(file, "")?;
     }
 
-    println!("End");
+    writeln!(file, "End")?;
+    Ok(())
 }
 
 /// Create a complete graph with n vertices.
@@ -215,14 +224,15 @@ fn main() {
         inst = Instance{g: complete_graph(args.n), k: args.k, s: args.source};
     }
 
-    println!("{:?}", Dot::new(&inst.g));
-
     // Start the job.
     if args.job == "ilp" {
-        create_lp(true, &inst);
+        let _ = create_lp(true, &inst, &args.outputfile);
     } else if args.job == "lp" {
-        create_lp(false, &inst);
+        let _ = create_lp(false, &inst, &args.outputfile);
     } else if args.job == "apx" {
 
+    } else if args.job == "dot" {
+        let file = fs::File::create(args.outputfile);
+        let _ = writeln!(file.unwrap(), "{:?}", Dot::new(&inst.g));
     }
 }
