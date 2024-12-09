@@ -148,13 +148,13 @@ fn create_lp(ilp: bool, inst: &Instance) {
     // Force the absorption.
     for v in g.node_indices() {
         if v != inst.s.into() {
-            print!("f_{}", v.index());
+            print!("{} f_{}", inst.k - 1, v.index());
             for e in g.edges(v) {
                 let (from, to) = (e.source(), e.target());
                 if from == v {
-                    print!(" - 1/{} f_{}_{}", inst.k - 1, to.index(), v.index())
+                    print!(" - f_{}_{}", to.index(), v.index())
                 } else {
-                    print!(" - 1/{} f_{}_{}", inst.k - 1, from.index(), v.index())
+                    print!(" - f_{}_{}", from.index(), v.index())
                 }
             }
             println!(" >= 0");
