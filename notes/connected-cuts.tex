@@ -193,7 +193,7 @@
 		f_s = 1 \\
 		\sum_{u \in V, uv \in E} f_{uv} = \sum_{u \in V, vu \in E} f_{vu} + f_v & \forall v \in V, s \neq v \\
 		\sum_{u \in V} f_u = k \\
-		f_{v} \geq \frac{1}{\deg(v) \cdot(k-1)} \sum_{u \in V, \{uv\} \in E} f_{uv} & \forall v \in V \setminus \{s\}
+		f_{v} \geq \frac{1}{k-1} \sum_{u \in V, \{uv\} \in E} f_{uv} & \forall v \in V \setminus \{s\}
 	\end{array}
 	$$
 	
@@ -216,7 +216,7 @@
 			f_s = 1 \\
 			\sum_{u \in V, uv \in E} f_{uv} = \sum_{u \in V, vu \in E} f_{vu} + f_v & \forall v \in V, s \neq v \\
 			\sum_{u \in V} f_u = k \\
-			f_{v} \geq \frac{1}{\deg(v) \cdot(k-1)} \sum_{u \in V, \{uv\} \in E} f_{uv} & \forall v \in V \setminus \{s\} \\
+			f_{v} \geq \frac{1}{k-1} \sum_{u \in V, \{uv\} \in E} f_{uv} & \forall v \in V \setminus \{s\} \\
 			f_v \in \{0,1\} & \forall v \in V \\
 			f_{uv} \in \mathbb{R}^+ & \forall \{u,v\} \in E \\
 			x_{uv} \in \{0,1\} & \forall \{u,v\} \in E

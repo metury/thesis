@@ -152,9 +152,9 @@ fn create_lp(ilp: bool, inst: &Instance) {
             for e in g.edges(v) {
                 let (from, to) = (e.source(), e.target());
                 if from == v {
-                    print!(" - 1/{} f_{}_{}", inst.k, to.index(), v.index())
+                    print!(" - 1/{} f_{}_{}", inst.k - 1, to.index(), v.index())
                 } else {
-                    print!(" - 1/{} f_{}_{}", inst.k, from.index(), v.index())
+                    print!(" - 1/{} f_{}_{}", inst.k - 1, from.index(), v.index())
                 }
             }
             println!(" >= 0");
