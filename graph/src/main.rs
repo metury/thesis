@@ -234,5 +234,14 @@ fn main() {
     } else if args.job == "dot" {
         let file = fs::File::create(args.outputfile);
         let _ = writeln!(file.unwrap(), "{:?}", Dot::with_config(&inst.g, &[Config::EdgeNoLabel, Config::NodeNoLabel]));
+    } else if args.job == "dot-apx" {
+        let file = fs::File::create(args.outputfile);
+        let dot = Dot::with_attr_getters(
+            &inst.g,
+            &[Config::EdgeNoLabel],
+            &|_, _| "".to_string(),
+            &|_, _| format!("color=\"blue\""),
+        );
+        let _ = writeln!(file.unwrap(), "{:?}", dot);
     }
 }
