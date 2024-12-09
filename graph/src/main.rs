@@ -233,6 +233,6 @@ fn main() {
 
     } else if args.job == "dot" {
         let file = fs::File::create(args.outputfile);
-        let _ = writeln!(file.unwrap(), "{:?}", Dot::new(&inst.g));
+        let _ = writeln!(file.unwrap(), "{:?}", Dot::with_config(&inst.g, &[Config::EdgeNoLabel, Config::NodeNoLabel]));
     }
 }
