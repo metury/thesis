@@ -1,5 +1,6 @@
 use petgraph::graph::UnGraph;
 use petgraph::visit::EdgeRef;
+use petgraph::dot::{Dot, Config};
 use clap::Parser;
 use regex::Regex;
 use std::fs;
@@ -213,6 +214,8 @@ fn main() {
     } else if args.graph == "complete" {
         inst = Instance{g: complete_graph(args.n), k: args.k, s: args.source};
     }
+
+    println!("{:?}", Dot::new(&inst.g));
 
     // Start the job.
     if args.job == "ilp" {
