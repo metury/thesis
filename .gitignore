@@ -1,3 +1,7 @@
+programs/
+dot/
+graphs/
+
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
@@ -27,6 +31,7 @@
 *.lp
 *.ilp
 *.sol
+*.dot
 *.log
 
 ## Bibliography auxiliary files (bibtex/biblatex/biber):
