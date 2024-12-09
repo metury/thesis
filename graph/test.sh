@@ -2,7 +2,7 @@
 
 set -ueo pipefail
 
-mkdir graphs programs programs/lp programs/ilp programs/sol-ilp programs/sol-lp dot
+mkdir -p graphs programs programs/lp programs/ilp programs/sol-ilp programs/sol-lp dot
 
 echo "s=0
 k=6
@@ -16,4 +16,4 @@ cargo run -- --job dot -i graphs/test.in -o dot/test.gv
 
 dot -T png -O dot/test.gv
 gurobi_cl ResultFile="programs/sol-ilp/test.sol" programs/ilp/test.ilp
-gurobi_cl ResultFile="programs/sol-lp/test.sol" programs/ilp/test.lp
+gurobi_cl ResultFile="programs/sol-lp/test.sol" programs/lp/test.lp
