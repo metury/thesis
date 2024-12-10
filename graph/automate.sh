@@ -6,7 +6,7 @@ mkdir -p graphs programs programs/lp programs/ilp programs/sol-ilp programs/sol-
 
 graphs=$(./graph-creator.py)
 
-for graph in "$graphs"; do
+for graph in $graphs; do
 
 	input="graphs/$graph.in"
 	ilp="programs/ilp/$graph.ilp"

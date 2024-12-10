@@ -10,7 +10,15 @@ def star_path(filepath, path_len, star_size, k, s):
 		for i in range(star_size):
 			f.write(f"[{path_len};{path_len + i + 1}]")
 
+def clique(filepath, n, k, s):
+	with open(filepath, "w") as f:
+		f.write(f"s={s} k={k}")
+		for i in range(n):
+			for j in range(i+1, n):
+				f.write(f"[{i};{j}]")
 
 if __name__ == "__main__":
 	star_path("graphs/star-path.in", 10, 10, 12, 0)
 	print("star-path")
+	clique("graphs/clique.in", 20, 6, 0)
+	print("clique")
