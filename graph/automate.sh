@@ -4,13 +4,9 @@ set -ueo pipefail
 
 mkdir -p graphs programs programs/lp programs/ilp programs/sol-ilp programs/sol-lp images images/dot images/png images/svg
 
-echo "s=0
-k=6
-[0;1][1;2][2;3][3;4][4;5][5;6][6;7][7;8][8;9] # The path.
-[0;10][10;11][10;12][10;13][10;14][10;15][10;16][10;17][10;18][10;19][10;20]
-" > graphs/test.in
+graphs=$(./graph-creator.py)
 
-for graph in "test$@"; do
+for graph in "$graphs"; do
 
 	input="graphs/$graph.in"
 	ilp="programs/ilp/$graph.ilp"
