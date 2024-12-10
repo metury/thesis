@@ -1,4 +1,4 @@
-use petgraph::graph::UnGraph;
+use petgraph::graph::{UnGraph, DiGraph};
 use petgraph::visit::EdgeRef;
 use petgraph::dot::{Dot, Config};
 use clap::Parser;
@@ -32,8 +32,12 @@ struct Args {
     #[arg(short,long, default_value_t = String::new())]
     outputfile: String,
 
+    /// Solution file.
+    #[arg(short,long, default_value_t = String::new())]
+    solutionfile: String,
+
     /// Source vertex.
-    #[arg(short, long, default_value_t = 0)]
+    #[arg(long, default_value_t = 0)]
     source: u32,
 
     /// What graph to create: complete, path.
@@ -70,6 +74,59 @@ fn read_file(filepath: &str) -> Instance {
     let k: u32 = (&k_rgx.expect("REASON").captures(&contents).unwrap()[1]).parse().unwrap();
 
     Instance {g, k, s}
+}
+
+/// Parse the solution to initialize new graph.
+fn parse_solution(filepath: &str, g: &Graph) -> (DiGraph<f64, f64>, DiGraph<f64, f64>) {
+    let mut cut_graph: DiGraph<f64, f64> = Default::default();
+    let mut flow_graph: DiGraph<f64, f64> = Default::default();
+    for _ in g.node_indices() {
+        cut_graph.add_node(0f64);
+        flow_graph.add_node(0f64);
+    }
+
+    for e in g.edge_indices() {
+        if let Some((from, to)) = g.edge_endpoints(e) {
+            cut_graph.add_edge(from, to, 0f64);
+            flow_graph.add_edge(from, to, 0f64);
+            cut_graph.add_edge(to, from, 0f64);
+            flow_graph.add_edge(to, from, 0f64);
+        }
+    }
+    let contents = fs::read_to_string(filepath).unwrap();
+
+    let cut_regex = Regex::new(r"x_([0-9]+)_([0-9]+)\s([0-9\.e\-\+]+)").unwrap();
+
+    for (_, [id_from, id_to, value]) in cut_regex.captures_iter(&contents).map(|c| c.extract()) {
+        let from = id_from.parse::<u32>().unwrap();
+        let to = id_to.parse::<u32>().unwrap();
+        let val = value.parse::<f64>().unwrap();
+        if let Some(edge) = cut_graph.find_edge(from.into(), to.into()) {
+            cut_graph[edge] = val;
+        }
+    }
+
+    let flow_edge_regex = Regex::new(r"f_([0-9]+)_([0-9]+)\s([0-9\.e\-\+]+)").unwrap();
+    let flow_node_regex = Regex::new(r"f_([0-9]+)\s([0-9\.e\-\+]+)").unwrap();
+
+    for (_, [id_from, id_to, value]) in flow_edge_regex.captures_iter(&contents).map(|c| c.extract()) {
+        let from = id_from.parse::<u32>().unwrap();
+        let to = id_to.parse::<u32>().unwrap();
+        let val = value.parse::<f64>().unwrap();
+        if let Some(edge) = flow_graph.find_edge(from.into(), to.into()) {
+            flow_graph[edge] = val;
+        }
+    }
+
+    for (_, [id, value]) in flow_node_regex.captures_iter(&contents).map(|c| c.extract()) {
+        let v = id.parse::<u32>().unwrap();
+        let val = value.parse::<f64>().unwrap();
+        if let Some(weight) = flow_graph.node_weight_mut(v.into()) {
+            *weight = val;
+        }
+    }
+
+    (cut_graph, flow_graph)
 }
 
 /// Create linear program.
@@ -234,13 +291,42 @@ fn main() {
     } else if args.job == "dot" {
         let file = fs::File::create(args.outputfile);
         let _ = writeln!(file.unwrap(), "{:?}", Dot::with_config(&inst.g, &[Config::EdgeNoLabel, Config::NodeNoLabel]));
-    } else if args.job == "dot-apx" {
+    } else if args.job == "dot-cut" {
+        let (cut_graph, _) = parse_solution(&args.solutionfile, &inst.g);
         let file = fs::File::create(args.outputfile);
         let dot = Dot::with_attr_getters(
-            &inst.g,
-            &[Config::EdgeNoLabel],
-            &|_, _| "".to_string(),
-            &|_, _| format!("color=\"blue\""),
+            &cut_graph,
+            &[Config::NodeNoLabel],
+            &|_, edge| {
+                if *edge.weight() > 0f64 {
+                    format!("color=red")
+                } else {
+                    format!("color=black")
+                }
+            },
+            &|_, _| "".to_string()
+        );
+        let _ = writeln!(file.unwrap(), "{:?}", dot);
+    } else if args.job == "dot-flow" {
+        let (_, flow_graph) = parse_solution(&args.solutionfile, &inst.g);
+        let file = fs::File::create(args.outputfile);
+        let dot = Dot::with_attr_getters(
+            &flow_graph,
+            &[],
+            &|_, edge| {
+                if *edge.weight() > 0f64 {
+                    format!("color=blue")
+                } else {
+                    format!("color=black")
+                }
+            },
+            &|_, (_, weight)| {
+                if *weight > 0f64 {
+                    format!("color=blue")
+                } else {
+                    format!("color=black")
+                }
+            },
         );
         let _ = writeln!(file.unwrap(), "{:?}", dot);
     }
