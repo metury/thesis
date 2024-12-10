@@ -28,5 +28,5 @@ if __name__ == "__main__":
 	print("star-path")
 	clique("graphs/clique.in", 8, 3, 0)
 	print("clique")
-	star("graphs/star.in", 20, 4, 0)
+	star("graphs/star.in", 20, 4, 1)
 	print("star")
