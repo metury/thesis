@@ -25,32 +25,16 @@ struct Args {
     job: String,
 
     /// Input file.
-    #[arg(short,long, default_value_t = String::new())]
+    #[arg(short,long)]
     inputfile: String,
 
      /// Output file.
-    #[arg(short,long, default_value_t = String::new())]
+    #[arg(short,long)]
     outputfile: String,
 
     /// Solution file.
     #[arg(short,long, default_value_t = String::new())]
     solutionfile: String,
-
-    /// Source vertex.
-    #[arg(long, default_value_t = 0)]
-    source: u32,
-
-    /// What graph to create: complete, path.
-    #[arg(short, long, default_value_t = String::new())]
-    graph: String,
-
-    /// How big the graph should be.
-    #[arg(short, default_value_t = 0)]
-    n: u32,
-
-    /// How big the connected cut should be.
-    #[arg(short, default_value_t = 0)]
-    k: u32,
 }
 
 /// Read graph from file which is provided via a filpeath.
@@ -259,27 +243,11 @@ fn create_lp(ilp: bool, inst: &Instance, ofile:& String) -> io::Result<()> {
     Ok(())
 }
 
-/// Create a complete graph with n vertices.
-fn complete_graph(n: u32) -> Graph {
-    let mut raw_edges: Vec<(u32, u32)> = vec![];
-    for i in 0..n {
-        for j in (i+1)..n {
-            raw_edges.push((i,j));
-        }
-    }
-    UnGraph::<(), ()>::from_edges(&raw_edges)
-}
-
 /// Main function of the program.
 fn main() {
     let args = Args::parse();
     // Create an instance.
-    let mut inst = Instance {g: complete_graph(1), s:0, k:0};
-    if !args.inputfile.is_empty() {
-        inst = read_file(&args.inputfile);
-    } else if args.graph == "complete" {
-        inst = Instance{g: complete_graph(args.n), k: args.k, s: args.source};
-    }
+    let inst = read_file(&args.inputfile);
 
     // Start the job.
     if args.job == "ilp" {
