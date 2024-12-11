@@ -15,7 +15,7 @@
 \usepackage{tikz}
 \usepackage{caption}
 \usepackage{subcaption}
-\hypersetup{linkbordercolor=WildStrawberry}
+\hypersetup{linkbordercolor=WildStrawberry, urlbordercolor=RoyalPurple}
 
 \theoremstyle{plain}
 \newtheorem{thm}{Theorem}
@@ -249,7 +249,7 @@
 
 	Now it is also a time to talk about integrality, moreover what will happen if we switch to lp relaxation.
 	
-	\subsection{Example}
+	\subsection{Example (which is not correct anymore)}
 	
 	Now consider a simple example of a graph $G$ which is depicted on picture \ref{star-graph}. It is a so called star, where $v$ is the center point with $\Delta$ neighbors. In this special instance $s$ is already provided, now we need to set $k = 2$.
 	
@@ -381,5 +381,39 @@
 		\caption{Absorbing flow of the linear relaxation.}
 		\label{star-graph-lp}
 	\end{figure}
+
+	\subsection{Update}
+	
+	In this subsection we will provide even better model, which arises from the previously mentioned one. This time we will also use the notation $d(u,v)$ for shortest path between vertices $u$ and $v$. This is a well known property of graphs, which can be computed in polynomial time (e.g. using Dijsktra's algorithm). Therefore we will increase what we want the vertex absorb by setting the fraction $\frac{1}{k-1}$ to $\frac{1}{k - d(s,u)}$ for every $u$. That is we combine two different metrics of path length. One in terms of standard length and the other of terms flow. The linear program is as follows.
+	
+	\begin{equation}
+		\begin{array}{r l}
+			\min \sum_{e \in E} x_e \\
+			x_{uv} \geq f_u - f_v & \forall \{uv\} \in E\\
+			x_{uv} \geq f_v - f_u & \forall \{uv\} \in E\\
+			\sum_{v \in V, sv \in E} f_{sv} = k-1 \\
+			f_s = 1 \\
+			\sum_{u \in V, uv \in E} f_{uv} = \sum_{u \in V, vu \in E} f_{vu} + f_v & \forall v \in V, s \neq v \\
+			\sum_{u \in V} f_u = k \\
+			f_{v} \geq \sum_{u \in V, \{uv\} \in E} \frac{1}{k-d(s,v)} f_{uv} & \forall v \in V \setminus \{s\} \\
+			f_v \in \{0,1\} & \forall v \in V \\
+			f_{uv} \in \mathbb{R}^+ & \forall \{u,v\} \in E \\
+			x_{uv} \in \{0,1\} & \forall \{u,v\} \in E
+		\end{array}
+	\end{equation}
+
+	\section{Links}
+	
+	Here I am keeping some useful links.
+	
+	\begin{enumerate}
+		\item \href{https://www.semanticscholar.org/paper/Approximating-unique-games-Gupta-Talwar/a90ecfd407e1730c9039fdc46e7efefcc46dcfda}{Approximating unique games}
+		\item \href{https://www.khoury.northeastern.edu/home/austin/papers/bisection.pdf}{Minimum Bisection}
+		\item \href{https://epubs.siam.org/doi/abs/10.1137/120873996}{Min max and small set expansion}
+		\item \href{https://link.springer.com/article/10.1007/s00453-021-00870-3}{Approximation algorithms for maximally balanced connected graph partition}
+		\item \href{https://www.sciencedirect.com/science/article/pii/S0304397515009378}{On size-constrained minimum s–t cut problems and size-constrained dense subgraph problems}
+		\item \href{https://link.springer.com/article/10.1007/s10107-023-01987-9}{On the minimum $s-t$ cut problem with budget constraints}
+		\item \href{https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ESA.2021.26}{Balanced Crown Decomposition for Connectivity Constraints}
+	\end{enumerate}
 	
 \end{document}
