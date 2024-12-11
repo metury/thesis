@@ -6,6 +6,7 @@ use regex::Regex;
 use std::fs;
 use std::io::{self, Write};
 use std::collections::{HashSet, HashMap};
+use petgraph::algo::dijkstra;
 
 /// Shorter type for graph.
 type Graph = UnGraph<(),()>;
@@ -119,6 +120,8 @@ fn parse_solution(filepath: &str, g: &Graph) -> (DiGraph<f64, f64>, DiGraph<f64,
 fn create_lp(ilp: bool, inst: &Instance, ofile:& String) -> io::Result<()> {
     let g = &inst.g;
     let mut first = true;
+
+    let _res = dijkstra(g, inst.s.into(), None, |_| 1);
 
     let mut file = fs::File::create(ofile)?;
 
