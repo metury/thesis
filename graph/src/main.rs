@@ -5,6 +5,7 @@ use clap::Parser;
 use regex::Regex;
 use std::fs;
 use std::io::{self, Write};
+use std::collections::{HashSet, HashMap};
 
 /// Shorter type for graph.
 type Graph = UnGraph<(),()>;
@@ -241,6 +242,35 @@ fn create_lp(ilp: bool, inst: &Instance, ofile:& String) -> io::Result<()> {
 
     writeln!(file, "End")?;
     Ok(())
+}
+
+fn approximate(inst: &Instance, graph: &DiGraph<f64, f64>) -> HashSet<u32> {
+    let mut cut_vertices: HashSet<u32> = Default::default();
+    let mut current = inst.s;
+    let mut neighbours: HashMap<u32, f64> = Default::default();
+
+    while cut_vertices.len() < inst.k as usize {
+        cut_vertices.insert(current);
+        for e in graph.edges(current.into()) {
+            let (from, to) = (e.source(), e.target());
+            if from.index() as u32 == current {
+                if let Some(val) = neighbours.get(&(to.index() as u32)) {
+                    neighbours.insert(to.index() as u32, val + *e.weight());
+                } else {
+                    neighbours.insert(to.index() as u32, *e.weight());
+                }
+
+            } else {
+                if let Some(val) = neighbours.get(&(from.index() as u32)) {
+                    neighbours.insert(from.index() as u32, val + *e.weight());
+                } else {
+                    neighbours.insert(from.index() as u32, *e.weight());
+                }
+            }
+            // Choose neighbour based on probability.
+        }
+    }
+    cut_vertices
 }
 
 /// Main function of the program.
