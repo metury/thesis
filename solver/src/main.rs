@@ -121,7 +121,7 @@ fn create_lp(ilp: bool, inst: &Instance, ofile:& String) -> io::Result<()> {
     let g = &inst.g;
     let mut first = true;
 
-    let _res = dijkstra(g, inst.s.into(), None, |_| 1);
+    let dist = dijkstra(g, inst.s.into(), None, |_| 1);
 
     let mut file = fs::File::create(ofile)?;
 
@@ -202,7 +202,7 @@ fn create_lp(ilp: bool, inst: &Instance, ofile:& String) -> io::Result<()> {
     // Force the absorption.
     for v in g.node_indices() {
         if v != inst.s.into() {
-            write!(file, "{} f_{}", inst.k - 1, v.index())?;
+            write!(file, "{} f_{}", (inst.k - dist[&v]), v.index())?;
             for e in g.edges(v) {
                 let (from, to) = (e.source(), e.target());
                 if from == v {
