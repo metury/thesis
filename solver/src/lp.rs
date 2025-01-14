@@ -10,18 +10,18 @@ pub type Graph = UnGraph<(),()>;
 /// Strucutre for minimum k connected cut.
 pub struct Instance {
   g: Graph,
-  k: u32,
+  c: u32,
   s: u32,
 }
 
 
 impl Instance {
   pub fn new(g: Graph, k: u32, s: u32) -> Self {
-	Instance{g,k,s}
+	Instance{g,c: k,s}
   }
 
   pub fn capacity(&self) -> u32 {
-	self.k
+	self.c
   }
 
   pub fn source(&self) -> u32 {
@@ -81,7 +81,7 @@ pub fn create_lp(ilp: bool, inst: &Instance, ofile:& String) -> io::Result<()> {
 	  write!(file, "f_{}_{}", inst.s, from)?;
 	}
   }
-  writeln!(file, " = {}", inst.k - 1)?;
+  writeln!(file, " = {}", inst.c - 1)?;
 
   // f_s = 1
   writeln!(file, "f_{} = 1", inst.s)?;
@@ -115,12 +115,12 @@ pub fn create_lp(ilp: bool, inst: &Instance, ofile:& String) -> io::Result<()> {
 	first = false;
 	write!(file, "f_{}", v.index())?;
   }
-  writeln!(file, " = {}", inst.k)?;
+  writeln!(file, " = {}", inst.c)?;
 
   // Force the absorption.
   for v in g.node_indices() {
 	if v != inst.s.into() {
-	  write!(file, "{} f_{}", (inst.k - dist[&v]), v.index())?;
+	  write!(file, "{} f_{}", (inst.c - dist[&v]), v.index())?;
 	  for e in g.edges(v) {
 		let (from, to) = (e.source(), e.target());
 		if from == v {
