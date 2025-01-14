@@ -7,23 +7,23 @@ mod parser;
 mod lp;
 mod aprox;
 
-/// These arguments are available. You must select a job and than either provide an input file to the graph or create some graph.
+/// These arguments are available. You must select a job and than provide an input file to the graph.
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {
-    /// What job to do: ilp, lp, apx.
+    /// What job to do: ilp - integer linear program, lp - linear program, apx - approximate the result, dot - create dot file for graph.
     #[arg(short, long)]
     job: String,
 
-    /// Input file.
+    /// Graph in the input file.
     #[arg(short,long)]
     inputfile: String,
 
-     /// Output file.
+     /// Where to output the result.
     #[arg(short,long)]
     outputfile: String,
 
-    /// Solution file.
+    /// Where is the file with the solution.
     #[arg(short,long, default_value_t = String::new())]
     solutionfile: String,
 }
@@ -31,21 +31,20 @@ struct Args {
 /// Main function of the program.
 fn main() {
     let args = Args::parse();
-    // Create an instance.
-    let inst = parser::read_file(&args.inputfile);
+    let instance = parser::read_file(&args.inputfile);
 
     // Start the job.
     if args.job == "ilp" {
-        let _ = lp::create_lp(true, &inst, &args.outputfile);
+        let _ = lp::create_lp(true, &instance, &args.outputfile);
     } else if args.job == "lp" {
-        let _ = lp::create_lp(false, &inst, &args.outputfile);
+        let _ = lp::create_lp(false, &instance, &args.outputfile);
     } else if args.job == "apx" {
 
     } else if args.job == "dot" {
         let file = fs::File::create(args.outputfile);
-        let _ = writeln!(file.unwrap(), "{:?}", Dot::with_config(inst.graph(), &[Config::EdgeNoLabel, Config::NodeNoLabel]));
+        let _ = writeln!(file.unwrap(), "{:?}", Dot::with_config(instance.graph(), &[Config::EdgeNoLabel, Config::NodeNoLabel]));
     } else if args.job == "dot-cut" {
-        let (cut_graph, _) = parser::parse_solution(&args.solutionfile, inst.graph());
+        let (cut_graph, _) = parser::parse_solution(&args.solutionfile, instance.graph());
         let file = fs::File::create(args.outputfile);
         let dot = Dot::with_attr_getters(
             &cut_graph,
@@ -61,7 +60,7 @@ fn main() {
         );
         let _ = writeln!(file.unwrap(), "{:?}", dot);
     } else if args.job == "dot-flow" {
-        let (_, flow_graph) = parser::parse_solution(&args.solutionfile, inst.graph());
+        let (_, flow_graph) = parser::parse_solution(&args.solutionfile, instance.graph());
         let file = fs::File::create(args.outputfile);
         let dot = Dot::with_attr_getters(
             &flow_graph,

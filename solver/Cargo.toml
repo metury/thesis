@@ -1,6 +1,6 @@
 [package]
-name = "graph"
-version = "0.1.0"
+name = "connected-cut-solver"
+version = "0.1.1"
 edition = "2021"
 
 [dependencies]
