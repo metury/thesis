@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-
-def star_path(filepath, path_len, star_size, k, s):
+def comet(filepath, path_len, star_size, k, s):
 	with open(filepath, "w") as f:
 		f.write(f"s={s} k={k}")
 		for i in range(1, path_len):
@@ -24,13 +23,13 @@ def star(filepath, n, k, s):
 			f.write(f"[{0};{i}]")
 
 if __name__ == "__main__":
-	star_path("graphs/comet.in", 10, 10, 12, 0)
+	comet("graphs/comet.in", 10, 10, 12, 0)
 	print("comet")
-	star_path("graphs/comet2.in", 10, 10, 12, 12)
+	comet("graphs/comet2.in", 10, 10, 10, 12)
 	print("comet2")
 	clique("graphs/clique.in", 8, 3, 0)
 	print("clique")
 	star("graphs/star.in", 20, 4, 1)
 	print("star")
-	star_path("graphs/path.in", 10, 10, 6, 0)
+	comet("graphs/path.in", 10, 10, 6, 0)
 	print('path')
