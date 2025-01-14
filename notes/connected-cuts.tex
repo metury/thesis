@@ -43,33 +43,33 @@
 	
 	\section{Preliminaries}
 	
-	We define graph $G = (V,E)$ as usual. Then we talk about edges defined by a cut in the following way. For vertices $S \subseteq V$ we define $E(S, V \setminus S) = \{e \in E \text{ s.t. } |e \cap S| = 1\}$, then the size of a cut is $e(S, V \setminus S) = |E(S, V \setminus S)|$. Also we will talk about the induced subgraphs which will be denoted as $G[S]$ for some vertices $S \subseteq V$. Just to recall that graph is called connected if in between every pair of vertices exist a walk. Also in most cases we will be considering graphs which are connected, but sometimes this is not necessary.
+	We define graph $G = (V,E)$ as usual. Then we talk about edges defined by a cut in the following way. For vertices $S \subseteq V$ we define $E(S, V \setminus S) = \{e \in E \text{ s.t. } |e \cap S| = 1\}$, then the size of a cut is $e(S, V \setminus S) = |E(S, V \setminus S)|$. Also we will talk about the induced subgraphs which will be denoted as $G[S]$ for some vertices $S \subseteq V$. Just to recall that graph is called connected if between every pair of vertices there exists a walk. Also in most cases we will be considering graphs which are connected, but sometimes this is not necessary.
 	
 	
 	\section{Connected cuts definitions}
 	
-	We will now proceed to some definitions of cuts which are in one way or another connected. We will start simply and build on that.
+	We will now proceed to some definitions of cuts which are in one way or another connected (meaning that they induce a connected subgraph). We will start simply and build on that.
 	
 	\subsection{Single cuts}
 	
 	\begin{defn}[Connected cut]
-		For a connected graph $G = (V,E)$ we define connected cut as $S \subseteq V$ for which $G[S]$ is connected. The cut itself is $E(S, V \setminus S)$. Later on we may exchange if we will talk about vertices or edges.
+		For a connected graph $G = (V,E)$ we define connected cut as $S \subseteq V$ for which $G[S]$ is connected. The cut itself is $E(S, V \setminus S)$. Later on we may exchange if we will talk about vertices or edges. Also $(V, E \setminus E(S, V \setminus S))$ is a disconnected graph.
 		\label{def-connected-cut}
 	\end{defn}
 	
-	Now we will like to minimize the size of the cut, i.e. the value of $e(S, V \setminus S)$. Sometimes we may even define a connected cut with specific source vertex. This can be formulated by the next definition \ref{def-connected-s-cut}.
+	Now we will like to minimize the size of the cut, i.e. the value of $e(S, V \setminus S)$. Also note that the requirement for $G$ being connected is actually not necessary. Sometimes we may even define a connected cut with specific source vertex. This can be formulated by the next definition \ref{def-connected-s-cut}.
 	
-	\begin{defn}[Connected $s$ cut]
+	\begin{defn}[Connected $s$-cut]
 		For a connected graph $G = (V,E)$ and given vertex $s \in V$ we define connected cut as $S \subseteq V$ for which $G[S]$ is connected and also $s \in S$.
 		\label{def-connected-s-cut}
 	\end{defn}
 
-	This is pretty much the same problem as in previous definition \ref{def-connected-cut}. Note that we would also like to minimize the size of the cut, i.e. $e(S, V \setminus S)$. And if we can solve it for the connected $s$ cut we may also apply it for all $s \in V$ to get the value for general connected cut.
+	This is pretty much the same problem as in previous definition \ref{def-connected-cut}. Note that we would also like to minimize the size of the cut, i.e. $e(S, V \setminus S)$. And if we can solve it for the connected $s$ cut we may also apply it for all $s \in V$ to get the value for general connected cut. Some may already see that the property $G$ being connected is still not necessary.
 	
 	Some may already know that commonly used cut is for defined source and target distinct vertices. We could also use it in our case and only extend the previous definition by saying that $t \notin S$. It is somewhat tempting to also require that $G[V \setminus S]$ is supposed to be also connected. Therefore we can get the full connected $s-t$ cut.
 	
 	\begin{defn}[Connected $s-t$ cut]
-		For a connected graph $G = (V,E)$ and given two distinct vertices $s, v \in V$ we define connected $s-t$ cut as $S \subseteq V$ for which all following properties hold.
+		For a connected graph $G = (V,E)$ and given two distinct vertices $s, t \in V$ we define connected $s-t$ cut as $S \subseteq V$ for which all following properties hold.
 		
 		\begin{enumerate}
 			\item $s \in S$ and $t \notin S$.
@@ -172,7 +172,7 @@
 	\right.
 	$$
 	
-	See that these variables arise only from the definition of the problem.
+	See that these variables arise only from the definition of the problem. There is only change of $f_{uv}$ being limited by $k$, which can be easily observed to be the same.
 	
 	\subsection{Constraints}
 	
@@ -193,9 +193,11 @@
 		f_s = 1 \\
 		\sum_{u \in V, uv \in E} f_{uv} = \sum_{u \in V, vu \in E} f_{vu} + f_v & \forall v \in V, s \neq v \\
 		\sum_{u \in V} f_u = k \\
-		f_{v} \geq \frac{1}{k-1} \sum_{u \in V, \{uv\} \in E} f_{uv} & \forall v \in V \setminus \{s\}
+		(k-1)) \cdot f_{v} \geq \sum_{u \in V, \{uv\} \in E} f_{uv} & \forall v \in V \setminus \{s\}
 	\end{array}
 	$$
+	
+	The very last constraint is there to ensure some absorption, that is whenever there is some flow to the vertex we must absorb based on the flow and capacity.
 	
 	\subsection{Optimization function}
 	
@@ -216,7 +218,7 @@
 			f_s = 1 \\
 			\sum_{u \in V, uv \in E} f_{uv} = \sum_{u \in V, vu \in E} f_{vu} + f_v & \forall v \in V, s \neq v \\
 			\sum_{u \in V} f_u = k \\
-			f_{v} \geq \frac{1}{k-1} \sum_{u \in V, \{uv\} \in E} f_{uv} & \forall v \in V \setminus \{s\} \\
+			(k-1) \cdot f_{v} \geq \sum_{u \in V, \{uv\} \in E} f_{uv} & \forall v \in V \setminus \{s\} \\
 			f_v \in \{0,1\} & \forall v \in V \\
 			f_{uv} \in \mathbb{R}^+ & \forall \{u,v\} \in E \\
 			x_{uv} \in \{0,1\} & \forall \{u,v\} \in E
@@ -249,140 +251,140 @@
 
 	Now it is also a time to talk about integrality, moreover what will happen if we switch to lp relaxation.
 	
-	\subsection{Example (which is not correct anymore)}
-	
-	Now consider a simple example of a graph $G$ which is depicted on picture \ref{star-graph}. It is a so called star, where $v$ is the center point with $\Delta$ neighbors. In this special instance $s$ is already provided, now we need to set $k = 2$.
-	
-	\begin{figure}[!ht]\centering
-		\begin{tikzpicture}[main/.style = {draw, circle, inner sep=1.5pt}]
-			\node[main] (s) at (0,0) {$s$};
-			\node[main] (v) at (3,0) {$v$};
-			\node[main] (u) at (6,0) {$u$};
-			\node[main] (3) at (3,3) {};
-			\node[main] (1) at (1,2) {};
-			\node[main] (2) at (2,2.5) {};
-			\node[main] (5) at (5,2) {};
-			\draw[dotted] (3) to (5);
-			
-			\draw (s) -- (v);
-			\draw (v) -- (u);
-			\draw (v) -- (1);
-			\draw (v) -- (2);
-			\draw (v) -- (3);
-			\draw (v) -- (5);
-		\end{tikzpicture}
-		\caption{Star graph $G$ with special vertices $v,s$ and $u$.}
-		\label{star-graph}
-	\end{figure}
+%	\subsection{Example (which is not correct anymore)}
+%	
+%	Now consider a simple example of a graph $G$ which is depicted on picture \ref{star-graph}. It is a so called star, where $v$ is the center point with $\Delta$ neighbors. In this special instance $s$ is already provided, now we need to set $k = 2$.
+%	
+%	\begin{figure}[!ht]\centering
+%		\begin{tikzpicture}[main/.style = {draw, circle, inner sep=1.5pt}]
+%			\node[main] (s) at (0,0) {$s$};
+%			\node[main] (v) at (3,0) {$v$};
+%			\node[main] (u) at (6,0) {$u$};
+%			\node[main] (3) at (3,3) {};
+%			\node[main] (1) at (1,2) {};
+%			\node[main] (2) at (2,2.5) {};
+%			\node[main] (5) at (5,2) {};
+%			\draw[dotted] (3) to (5);
+%			
+%			\draw (s) -- (v);
+%			\draw (v) -- (u);
+%			\draw (v) -- (1);
+%			\draw (v) -- (2);
+%			\draw (v) -- (3);
+%			\draw (v) -- (5);
+%		\end{tikzpicture}
+%		\caption{Star graph $G$ with special vertices $v,s$ and $u$.}
+%		\label{star-graph}
+%	\end{figure}
+%
+%	We can easily observe that the optimal solution of such connected $s$ cut is by setting $S = \{s,v\}$ since if $s \in S$ and $G[S]$ has to be connected we can only choose $v$, so that also $|S| = k = 2$. But mainly we are interested in observing how will the integer or linear relaxation of our program work on such instance.
+%	
+%	\begin{observ}
+%		Integer linear program will find the optimal solution.
+%	\end{observ}
+%
+%	\begin{proof}
+%		See that $f(s) = 1$ and $f(sv) = 1$ thus $f(v) \geq \frac{1}{\Delta (2-1)} 1 = \frac{1}{\Delta}$. From the property that we have integer variables $f(v)$ must be 1. And hence we absorbed the whole flow and satisfied all constraints. Also the solution can be seen on the picture \ref{star-graph-ilp}.
+%	\end{proof}
+%
+%	\begin{figure}[!ht]\centering
+%		\begin{tikzpicture}[main/.style = {draw, circle, inner sep=1.5pt},
+%			flow/.style = {Salmon},
+%			cut/.style = {dashed, PineGreen}]
+%			\node[main,flow] (s) at (0,0) {$1$};
+%			\node[main,flow] (v) at (3,0) {$1$};
+%			\node[main] (u) at (6,0) {$u$};
+%			\node[main] (3) at (3,3) {};
+%			\node[main] (1) at (1,2) {};
+%			\node[main] (2) at (2,2.5) {};
+%			\node[main] (5) at (5,2) {};
+%			\draw[dotted] (3) to (5);
+%			
+%			\draw[flow, ->, thick] (s) -- (v) node[midway, above] {$1$};
+%			\draw[cut] (v) -- (u) node[midway, above] {$1$};
+%			\draw[cut] (v) -- (1) node[midway, above, right] {$1$};
+%			\draw[cut] (v) -- (2) node[midway, above, right] {$1$};
+%			\draw[cut] (v) -- (3) node[midway, right] {$1$};
+%			\draw[cut] (v) -- (5) node[midway, above left] {$1$};
+%		\end{tikzpicture}
+%		\caption{Absorbing flow of the integer program.}
+%		\label{star-graph-ilp}
+%	\end{figure}
+%
+%	\begin{observ}
+%		Linear relaxation will provide a solution with $S = V$ and $x_e > 0$ only for edge $sv$. 
+%	\end{observ}
+%
+%	\begin{proof}
+%		The starting point is the same as in previous case, that is $f(s) = 1$ and $f(sv) = 1$. Then we have that $f(v) \geq \frac{1}{\Delta}$. Now suppose that all $N[v] \setminus s$ will have the same value of $f$. So that the cut edge will be only one $sv$.
+%		
+%		Firstly we must see that this is indeed possible. What if we set $f(vx) = \frac{1}{\Delta}$ for all such neighbors $x \in N[v] \setminus s$, and also $f(x) = \frac{1}{\Delta}$. We have to check if such solution is indeed feasible. Lets sum all
+%		
+%		$$
+%		\sum_{v \in V} f(v) = f(s) + \sum_{v \in V \setminus s} f(v) = 1 + \sum_{v \in V \setminus s} \frac{1}{\Delta} = 1 + (1 + \Delta - 1) \frac{1}{\Delta} = 1 + \frac{\Delta}{\Delta} = 2
+%		$$
+%		
+%		Therefore we have satisfied the constrained of $k$ chosen vertices. Also we can see that the other properties still indeed hold, which are not so hard. For example the flow follow its restrictions. And we have the found the solution given in this observation and shown that it is feasible. The solution is shown on the picture \ref{star-graph-lp}. Now the value of the optimization function is $1 - \frac{1}{\Delta} = \frac{\Delta - 1}{\Delta}$, which $\frac{1}{\Delta}$ times less then the OPT.
+%		
+%		Lastly we have to see that this is indeed optimal. What can be changed? Only the value of $f(v)$ and flows from vertex $v$. Suppose we would move $\lambda$ back from $u$ to $v$. This will increase $f(v)$ to $\frac{1}{\Delta} + \lambda$ and decreased both $f(u)$ and $f(vu)$ by $\lambda$. This will decrease $x(sv)$ by $\lambda$ and increased $f(vx)$ by $\lambda$ for all neighbors of $v$ without $u,s$. Because for $x(vu)$ we will now have $2 \lambda$ so in total we haven't made a better solution. We would need to split $\lambda$ amongst all $\Delta -2$ such neighbors. But then we will again increase $x(sv)$, so we are in a dead end. All other cases are similar.
+%	\end{proof}
+%
+%	\begin{figure}[!ht]\centering
+%		\begin{subfigure}{.4\textwidth}\centering
+%			\begin{tikzpicture}[main/.style = {draw, circle, inner sep=1.5pt},
+%				flow/.style = {Salmon},
+%				cut/.style = {dashed, PineGreen}]
+%				\node[main,flow] (s) at (0,0) {$1$};
+%				\node[main,flow] (v) at (3,0) {$\frac{1}{\Delta}$};
+%				\node[main, flow] (u) at (6,0) {$\frac{1}{\Delta}$};
+%				\node[main, flow] (3) at (3,3) {$\frac{1}{\Delta}$};
+%				\node[main, flow] (1) at (1,2) {$\frac{1}{\Delta}$};
+%				\node[main, flow] (2) at (2,2.5) {$\frac{1}{\Delta}$};
+%				\node[main, flow] (5) at (5,2) {$\frac{1}{\Delta}$};
+%				\draw[dotted, flow] (3) to (5);
+%				
+%				\draw[flow, ->, thick] (s) -- (v) node[midway, above] {$1$};
+%				\draw[flow, ->, thick] (v) -- (u) node[midway, above] {$\frac{1}{\Delta}$};
+%				\draw[flow, ->, thick] (v) -- (1) node[midway, above, right] {$\frac{1}{\Delta}$};
+%				\draw[flow, ->, thick] (v) -- (2) node[midway, above, right] {$\frac{1}{\Delta}$};
+%				\draw[flow, ->, thick] (v) -- (3) node[midway, right] {$\frac{1}{\Delta}$};
+%				\draw[flow, ->, thick] (v) -- (5) node[midway, above left] {$\frac{1}{\Delta}$};
+%				\draw[cut, thick] (s) -- (v) node[midway, below] {$\frac{\Delta - 1}{\Delta}$};
+%			\end{tikzpicture}
+%		\end{subfigure}
+%		\begin{subfigure}{.4\textwidth}\centering
+%			\begin{tikzpicture}[main/.style = {draw, circle, inner sep=1.5pt},
+%				flow/.style = {Salmon},
+%				cut/.style = {dashed, PineGreen}]
+%				\node[main,flow] (s) at (0,0) {$1$};
+%				\node[main,flow] (v) at (3,0) {$\frac{1}{\Delta} + \lambda$};
+%				\node[main, flow] (u) at (6,0) {$\frac{1}{\Delta} - \lambda$};
+%				\node[main, flow] (3) at (3,3) {$\frac{1}{\Delta}$};
+%				\node[main, flow] (1) at (1,2) {$\frac{1}{\Delta}$};
+%				\node[main, flow] (2) at (2,2.5) {$\frac{1}{\Delta}$};
+%				\node[main, flow] (5) at (5,2) {$\frac{1}{\Delta}$};
+%				\draw[dotted, flow] (3) to (5);
+%				
+%				\draw[flow, ->, thick] (s) -- (v) node[midway, above] {$1$};
+%				\draw[flow, ->, thick] (v) -- (u) node[midway, above] {$\frac{1}{\Delta} - \lambda$};
+%				\draw[cut, thick] (v) -- (u) node[midway,below] {$2\lambda$};
+%				\draw[flow, ->, thick] (v) -- (1) node[midway, above, right] {$\frac{1}{\Delta}$};
+%				\draw[flow, ->, thick] (v) -- (2) node[midway, above, right] {$\frac{1}{\Delta}$};
+%				\draw[flow, ->, thick] (v) -- (3) node[midway, right] {$\frac{1}{\Delta}$};
+%				\draw[flow, ->, thick] (v) -- (5) node[midway, above left] {$\frac{1}{\Delta}$};
+%				\draw[cut, thick] (s) -- (v) node[midway, below] {$\frac{\Delta - 1}{\Delta}- \lambda$};
+%				\draw[cut, thick] (v) -- (1) node[near end, above, right] {$\lambda$};
+%				\draw[cut, thick] (v) -- (2) node[near end, above, right] {$\lambda$};
+%				\draw[cut, thick] (v) -- (3) node[near end, right] {$\lambda$};
+%				\draw[cut, thick] (v) -- (5) node[near end, above left] {$\lambda$};
+%			\end{tikzpicture}
+%		\end{subfigure}
+%		
+%		\caption{Absorbing flow of the linear relaxation.}
+%		\label{star-graph-lp}
+%	\end{figure}
 
-	We can easily observe that the optimal solution of such connected $s$ cut is by setting $S = \{s,v\}$ since if $s \in S$ and $G[S]$ has to be connected we can only choose $v$, so that also $|S| = k = 2$. But mainly we are interested in observing how will the integer or linear relaxation of our program work on such instance.
-	
-	\begin{observ}
-		Integer linear program will find the optimal solution.
-	\end{observ}
-
-	\begin{proof}
-		See that $f(s) = 1$ and $f(sv) = 1$ thus $f(v) \geq \frac{1}{\Delta (2-1)} 1 = \frac{1}{\Delta}$. From the property that we have integer variables $f(v)$ must be 1. And hence we absorbed the whole flow and satisfied all constraints. Also the solution can be seen on the picture \ref{star-graph-ilp}.
-	\end{proof}
-
-	\begin{figure}[!ht]\centering
-		\begin{tikzpicture}[main/.style = {draw, circle, inner sep=1.5pt},
-			flow/.style = {Salmon},
-			cut/.style = {dashed, PineGreen}]
-			\node[main,flow] (s) at (0,0) {$1$};
-			\node[main,flow] (v) at (3,0) {$1$};
-			\node[main] (u) at (6,0) {$u$};
-			\node[main] (3) at (3,3) {};
-			\node[main] (1) at (1,2) {};
-			\node[main] (2) at (2,2.5) {};
-			\node[main] (5) at (5,2) {};
-			\draw[dotted] (3) to (5);
-			
-			\draw[flow, ->, thick] (s) -- (v) node[midway, above] {$1$};
-			\draw[cut] (v) -- (u) node[midway, above] {$1$};
-			\draw[cut] (v) -- (1) node[midway, above, right] {$1$};
-			\draw[cut] (v) -- (2) node[midway, above, right] {$1$};
-			\draw[cut] (v) -- (3) node[midway, right] {$1$};
-			\draw[cut] (v) -- (5) node[midway, above left] {$1$};
-		\end{tikzpicture}
-		\caption{Absorbing flow of the integer program.}
-		\label{star-graph-ilp}
-	\end{figure}
-
-	\begin{observ}
-		Linear relaxation will provide a solution with $S = V$ and $x_e > 0$ only for edge $sv$. 
-	\end{observ}
-
-	\begin{proof}
-		The starting point is the same as in previous case, that is $f(s) = 1$ and $f(sv) = 1$. Then we have that $f(v) \geq \frac{1}{\Delta}$. Now suppose that all $N[v] \setminus s$ will have the same value of $f$. So that the cut edge will be only one $sv$.
-		
-		Firstly we must see that this is indeed possible. What if we set $f(vx) = \frac{1}{\Delta}$ for all such neighbors $x \in N[v] \setminus s$, and also $f(x) = \frac{1}{\Delta}$. We have to check if such solution is indeed feasible. Lets sum all
-		
-		$$
-		\sum_{v \in V} f(v) = f(s) + \sum_{v \in V \setminus s} f(v) = 1 + \sum_{v \in V \setminus s} \frac{1}{\Delta} = 1 + (1 + \Delta - 1) \frac{1}{\Delta} = 1 + \frac{\Delta}{\Delta} = 2
-		$$
-		
-		Therefore we have satisfied the constrained of $k$ chosen vertices. Also we can see that the other properties still indeed hold, which are not so hard. For example the flow follow its restrictions. And we have the found the solution given in this observation and shown that it is feasible. The solution is shown on the picture \ref{star-graph-lp}. Now the value of the optimization function is $1 - \frac{1}{\Delta} = \frac{\Delta - 1}{\Delta}$, which $\frac{1}{\Delta}$ times less then the OPT.
-		
-		Lastly we have to see that this is indeed optimal. What can be changed? Only the value of $f(v)$ and flows from vertex $v$. Suppose we would move $\lambda$ back from $u$ to $v$. This will increase $f(v)$ to $\frac{1}{\Delta} + \lambda$ and decreased both $f(u)$ and $f(vu)$ by $\lambda$. This will decrease $x(sv)$ by $\lambda$ and increased $f(vx)$ by $\lambda$ for all neighbors of $v$ without $u,s$. Because for $x(vu)$ we will now have $2 \lambda$ so in total we haven't made a better solution. We would need to split $\lambda$ amongst all $\Delta -2$ such neighbors. But then we will again increase $x(sv)$, so we are in a dead end. All other cases are similar.
-	\end{proof}
-
-	\begin{figure}[!ht]\centering
-		\begin{subfigure}{.4\textwidth}\centering
-			\begin{tikzpicture}[main/.style = {draw, circle, inner sep=1.5pt},
-				flow/.style = {Salmon},
-				cut/.style = {dashed, PineGreen}]
-				\node[main,flow] (s) at (0,0) {$1$};
-				\node[main,flow] (v) at (3,0) {$\frac{1}{\Delta}$};
-				\node[main, flow] (u) at (6,0) {$\frac{1}{\Delta}$};
-				\node[main, flow] (3) at (3,3) {$\frac{1}{\Delta}$};
-				\node[main, flow] (1) at (1,2) {$\frac{1}{\Delta}$};
-				\node[main, flow] (2) at (2,2.5) {$\frac{1}{\Delta}$};
-				\node[main, flow] (5) at (5,2) {$\frac{1}{\Delta}$};
-				\draw[dotted, flow] (3) to (5);
-				
-				\draw[flow, ->, thick] (s) -- (v) node[midway, above] {$1$};
-				\draw[flow, ->, thick] (v) -- (u) node[midway, above] {$\frac{1}{\Delta}$};
-				\draw[flow, ->, thick] (v) -- (1) node[midway, above, right] {$\frac{1}{\Delta}$};
-				\draw[flow, ->, thick] (v) -- (2) node[midway, above, right] {$\frac{1}{\Delta}$};
-				\draw[flow, ->, thick] (v) -- (3) node[midway, right] {$\frac{1}{\Delta}$};
-				\draw[flow, ->, thick] (v) -- (5) node[midway, above left] {$\frac{1}{\Delta}$};
-				\draw[cut, thick] (s) -- (v) node[midway, below] {$\frac{\Delta - 1}{\Delta}$};
-			\end{tikzpicture}
-		\end{subfigure}
-		\begin{subfigure}{.4\textwidth}\centering
-			\begin{tikzpicture}[main/.style = {draw, circle, inner sep=1.5pt},
-				flow/.style = {Salmon},
-				cut/.style = {dashed, PineGreen}]
-				\node[main,flow] (s) at (0,0) {$1$};
-				\node[main,flow] (v) at (3,0) {$\frac{1}{\Delta} + \lambda$};
-				\node[main, flow] (u) at (6,0) {$\frac{1}{\Delta} - \lambda$};
-				\node[main, flow] (3) at (3,3) {$\frac{1}{\Delta}$};
-				\node[main, flow] (1) at (1,2) {$\frac{1}{\Delta}$};
-				\node[main, flow] (2) at (2,2.5) {$\frac{1}{\Delta}$};
-				\node[main, flow] (5) at (5,2) {$\frac{1}{\Delta}$};
-				\draw[dotted, flow] (3) to (5);
-				
-				\draw[flow, ->, thick] (s) -- (v) node[midway, above] {$1$};
-				\draw[flow, ->, thick] (v) -- (u) node[midway, above] {$\frac{1}{\Delta} - \lambda$};
-				\draw[cut, thick] (v) -- (u) node[midway,below] {$2\lambda$};
-				\draw[flow, ->, thick] (v) -- (1) node[midway, above, right] {$\frac{1}{\Delta}$};
-				\draw[flow, ->, thick] (v) -- (2) node[midway, above, right] {$\frac{1}{\Delta}$};
-				\draw[flow, ->, thick] (v) -- (3) node[midway, right] {$\frac{1}{\Delta}$};
-				\draw[flow, ->, thick] (v) -- (5) node[midway, above left] {$\frac{1}{\Delta}$};
-				\draw[cut, thick] (s) -- (v) node[midway, below] {$\frac{\Delta - 1}{\Delta}- \lambda$};
-				\draw[cut, thick] (v) -- (1) node[near end, above, right] {$\lambda$};
-				\draw[cut, thick] (v) -- (2) node[near end, above, right] {$\lambda$};
-				\draw[cut, thick] (v) -- (3) node[near end, right] {$\lambda$};
-				\draw[cut, thick] (v) -- (5) node[near end, above left] {$\lambda$};
-			\end{tikzpicture}
-		\end{subfigure}
-		
-		\caption{Absorbing flow of the linear relaxation.}
-		\label{star-graph-lp}
-	\end{figure}
-
-	\subsection{Update}
+	\subsection{Consider the distance from source}
 	
 	In this subsection we will provide even better model, which arises from the previously mentioned one. This time we will also use the notation $d(u,v)$ for shortest path between vertices $u$ and $v$. This is a well known property of graphs, which can be computed in polynomial time (e.g. using Dijsktra's algorithm). Therefore we will increase what we want the vertex absorb by setting the fraction $\frac{1}{k-1}$ to $\frac{1}{k - d(s,u)}$ for every $u$. That is we combine two different metrics of path length. One in terms of standard length and the other of terms flow. The linear program is as follows.
 	
@@ -395,13 +397,80 @@
 			f_s = 1 \\
 			\sum_{u \in V, uv \in E} f_{uv} = \sum_{u \in V, vu \in E} f_{vu} + f_v & \forall v \in V, s \neq v \\
 			\sum_{u \in V} f_u = k \\
-			f_{v} \geq \sum_{u \in V, \{uv\} \in E} \frac{1}{k-d(s,v)} f_{uv} & \forall v \in V \setminus \{s\} \\
+			(k-d(s,v)) \cdot f_{v} \geq \sum_{u \in V, \{uv\} \in E} f_{uv} & \forall v \in V \setminus \{s\} \\
 			f_v \in \{0,1\} & \forall v \in V \\
 			f_{uv} \in \mathbb{R}^+ & \forall \{u,v\} \in E \\
 			x_{uv} \in \{0,1\} & \forall \{u,v\} \in E
 		\end{array}
 	\end{equation}
 
+
+	\section{Example graphs}
+	
+	We will be looking at a few graphs and mostly their classes and try to observe some properties.
+	
+	\subsection{Star graph}
+	
+	\begin{defn}
+		Star graph is a graph with one vertex with degree $\Delta$ and the rest of the vertices have degree 1 and are connected to the main one.
+	\end{defn}
+
+	\begin{figure}[!ht]\centering
+		\begin{tikzpicture}[main/.style = {draw, circle, inner sep=1.5pt}]
+				\node[main] (s) at (0,0) {$s$};
+				\node[main] (v) at (3,0) {$v$};
+				\node[main] (u) at (6,0) {$u$};
+				\node[main] (3) at (3,3) {};
+				\node[main] (1) at (1,2) {};
+				\node[main] (2) at (2,2.5) {};
+				\node[main] (5) at (5,2) {};
+				\draw[dotted] (3) to (5);
+				
+				\draw (s) -- (v);
+				\draw (v) -- (u);
+				\draw (v) -- (1);
+				\draw (v) -- (2);
+				\draw (v) -- (3);
+				\draw (v) -- (5);
+			\end{tikzpicture}
+		\caption{Star graph $G$ with special vertices $v,s$ and $u$.}
+		\label{star-graph}
+	\end{figure}
+
+	\subsection{Comet graph}
+	
+	\begin{defn}
+		Comet graph contain a star and a tail -- hence the name comet.
+	\end{defn}
+
+	\begin{figure}[!ht]\centering
+			\begin{tikzpicture}[main/.style = {draw, circle, inner sep=1.5pt}]
+					\node[main] (s) at (0,0) {$s$};
+					\node[main] (v) at (3,0) {$v$};
+					\node[main] (u) at (6,0) {$u$};
+					\node[main] (t1) at (7,0) {};
+					\node[main] (t2) at (8,0) {};
+					\node[main] (te) at (10,0) {};
+					\node[main] (3) at (3,3) {};
+					\node[main] (1) at (1,2) {};
+					\node[main] (2) at (2,2.5) {};
+					\node[main] (5) at (5,2) {};
+					\draw[dotted] (3) to (5);
+					
+					\draw (s) -- (v);
+					\draw (v) -- (u);
+					\draw (v) -- (1);
+					\draw (v) -- (2);
+					\draw (v) -- (3);
+					\draw (v) -- (5);
+					\draw (u) -- (t1);
+					\draw (t2) -- (t1);
+					\draw[dotted] (t2) -- (te);
+				\end{tikzpicture}
+			\caption{Comet graph $G$.}
+			\label{comet-graph}
+		\end{figure}
+	
 	\section{Links}
 	
 	Here I am keeping some useful links.
