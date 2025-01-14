@@ -17,10 +17,10 @@ for graph in $graphs; do
 	lp_sol="programs/sol-lp/$graph.sol"
 
 	dot="images/dot/$graph.gv"
-	dot_ilp_cut="images/dot/ilp-cut-$graph.gv"
-	dot_lp_cut="images/dot/lp-cut-$graph.gv"
-	dot_ilp_flow="images/dot/ilp-flow-$graph.gv"
-	dot_lp_flow="images/dot/lp-flow-$graph.gv"
+	dot_ilp_cut="images/dot/$graph-ilp-cut.gv"
+	dot_lp_cut="images/dot/$graph-lp-cut.gv"
+	dot_ilp_flow="images/dot/$graph-ilp-flow.gv"
+	dot_lp_flow="images/dot/$graph-lp-flow.gv"
 
 	cargo run -r -- --job ilp -i "$input" -o "$ilp"
 	cargo run -r -- --job lp -i "$input" -o "$lp"
@@ -34,17 +34,17 @@ for graph in $graphs; do
 	cargo run -r -- --job dot-cut -i "$input" -o "$dot_ilp_cut" -s "$ilp_sol"
 	cargo run -r -- --job dot-flow -i "$input" -o "$dot_ilp_flow" -s "$ilp_sol"
 
-	dot -T png "$dot_ilp_cut" -o "images/png/ilp-cut-$graph.png"
-	dot -T svg "$dot_ilp_cut" -o "images/svg/ilp-cut-$graph.svg"
-	dot -T png "$dot_ilp_flow" -o "images/png/ilp-flow-$graph.png"
-	dot -T svg "$dot_ilp_flow" -o "images/svg/ilp-flow-$graph.svg"
+	dot -T png "$dot_ilp_cut" -o "images/png/$graph-ilp-cut.png"
+	dot -T svg "$dot_ilp_cut" -o "images/svg/$graph-ilp-cut.svg"
+	dot -T png "$dot_ilp_flow" -o "images/png/$graph-ilp-flow.png"
+	dot -T svg "$dot_ilp_flow" -o "images/svg/$graph-ilp-flow.svg"
 
 	cargo run -r -- --job dot-cut -i "$input" -o "$dot_lp_cut" -s "$lp_sol"
 	cargo run -r -- --job dot-flow -i "$input" -o "$dot_lp_flow" -s "$lp_sol"
 
-	dot -T png "$dot_lp_cut" -o "images/png/lp-cut-$graph.png"
-	dot -T svg "$dot_lp_cut" -o "images/svg/lp-cut-$graph.svg"
-	dot -T png "$dot_lp_flow" -o "images/png/lp-flow-$graph.png"
-	dot -T svg "$dot_lp_flow" -o "images/svg/lp-flow-$graph.svg"
+	dot -T png "$dot_lp_cut" -o "images/png/$graph-lp-cut.png"
+	dot -T svg "$dot_lp_cut" -o "images/svg/$graph-lp-cut.svg"
+	dot -T png "$dot_lp_flow" -o "images/png/$graph-lp-flow.png"
+	dot -T svg "$dot_lp_flow" -o "images/svg/$graph-lp-flow.svg"
 
 done
