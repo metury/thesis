@@ -30,3 +30,5 @@ if __name__ == "__main__":
 	print("clique")
 	star("graphs/star.in", 20, 4, 1)
 	print("star")
+	star_path("graphs/path.in", 10, 10, 6, 0)
+	print('path')
