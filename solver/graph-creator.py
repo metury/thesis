@@ -24,8 +24,10 @@ def star(filepath, n, k, s):
 			f.write(f"[{0};{i}]")
 
 if __name__ == "__main__":
-	star_path("graphs/star-path.in", 10, 10, 12, 0)
-	print("star-path")
+	star_path("graphs/comet.in", 10, 10, 12, 0)
+	print("comet")
+	star_path("graphs/comet2.in", 10, 10, 12, 12)
+	print("comet2")
 	clique("graphs/clique.in", 8, 3, 0)
 	print("clique")
 	star("graphs/star.in", 20, 4, 1)
