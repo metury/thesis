@@ -443,6 +443,10 @@
 		Comet graph contain a star and a tail -- hence the name comet.
 	\end{defn}
 
+	\section{Improving the result}
+	
+	Also there is the fact that we want to have cut edges only when the flow is really low. Otherwise it does not make any sense. So either we may be improving our linear program along the way or just consider this during the approximation.
+
 	\begin{figure}[!ht]\centering
 			\begin{tikzpicture}[main/.style = {draw, circle, inner sep=1.5pt}]
 					\node[main] (s) at (0,0) {$s$};
