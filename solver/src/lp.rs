@@ -75,6 +75,22 @@ pub fn create_lp(ilp: bool, inst: &Instance, ofile: &String) -> io::Result<()> {
                 from.index(),
                 to.index()
             )?;
+            // ==== NEW
+            writeln!(
+                file,
+                "f_{1}_{2} + {0} x_{1}_{2} <= {0}",
+                inst.c - std::cmp::max(distances[&to], distances[&from]),
+                from.index(),
+                to.index()
+            )?;
+            writeln!(
+                file,
+                "f_{2}_{1} + {0} x_{2}_{1} <= {0}",
+                inst.c - std::cmp::max(distances[&to], distances[&from]),
+                from.index(),
+                to.index()
+            )?;
+            // ==== NEW see idea.md
         }
     }
     // The sum of the outgoing flow from s is k-1.
