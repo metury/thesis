@@ -17,7 +17,6 @@ pub fn _approximate(inst: &crate::lp::Instance, graph: &DiGraph<f64, f64>) -> Ha
 		} else {
 		  neighbours.insert(to.index() as u32, *e.weight());
 		}
-
 	  } else {
 		if let Some(val) = neighbours.get(&(from.index() as u32)) {
 		  neighbours.insert(from.index() as u32, val + *e.weight());
