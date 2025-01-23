@@ -6,7 +6,7 @@ rm -rf graphs programs programs/lp programs/ilp programs/sol-ilp programs/sol-lp
 
 mkdir -p graphs programs programs/lp programs/ilp programs/sol-ilp programs/sol-lp images images/dot images/png images/svg
 
-graphs=$(./graph-creator.py)
+graphs=$(cargo run -r -- --job gen)
 
 for graph in $graphs; do
 

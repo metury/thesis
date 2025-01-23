@@ -1,11 +1,11 @@
 use petgraph::graph::DiGraph;
 use petgraph::visit::EdgeRef;
-use std::collections::{HashSet, HashMap};
+use std::collections::{HashMap, HashSet};
 
 pub fn _approximate(inst: &crate::lp::Instance, graph: &DiGraph<f64, f64>) -> HashSet<u32> {
-  let mut cut_vertices: HashSet<u32> = Default::default();
-  let current = inst.source();
-  let mut neighbours: HashMap<u32, f64> = Default::default();
+    let mut cut_vertices: HashSet<u32> = Default::default();
+    let current = inst.source();
+    let mut neighbours: HashMap<u32, f64> = Default::default();
 
   while cut_vertices.len() < inst.capacity() as usize {
 	cut_vertices.insert(current);
