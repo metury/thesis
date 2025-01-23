@@ -6,6 +6,7 @@ use std::fs;
 mod parser;
 mod lp;
 mod aprox;
+mod generator;
 
 /// These arguments are available. You must select a job and than provide an input file to the graph.
 #[derive(Parser, Debug)]
@@ -15,10 +16,10 @@ struct Args {
 	#[arg(short, long)]
 	job: String,
 	/// Graph in the input file.
-	#[arg(short,long)]
+	#[arg(short,long, default_value_t = String::new())]
 	inputfile: String,
 		/// Where to output the result.
-	#[arg(short,long)]
+	#[arg(short,long, default_value_t = String::new())]
 	outputfile: String,
 	/// Where is the file with the solution.
 	#[arg(short,long, default_value_t = String::new())]
@@ -28,6 +29,10 @@ struct Args {
 /// Main function of the program.
 fn main() {
 	let args = Args::parse();
+	if args.job == "gen" {
+		generator::generate();
+		std::process::exit(0);
+	}
 	let instance = parser::read_file(&args.inputfile);
 	// Start the job.
 	if args.job == "ilp" {
