@@ -2,11 +2,16 @@
 
 set -ueo pipefail
 
-rm -rf graphs programs programs/lp programs/ilp programs/sol-ilp programs/sol-lp images images/dot images/png images/svg apx.sol
+solutions="results.md"
+
+rm -rf graphs programs programs/lp programs/ilp programs/sol-ilp programs/sol-lp images images/dot images/png images/svg "$solutions"
 
 mkdir -p graphs programs programs/lp programs/ilp programs/sol-ilp programs/sol-lp images images/dot images/png images/svg
 
 graphs=$(cargo run -r -- --job gen)
+
+echo "| Graph name | ILP | LP | Aproximation |" > "$solutions"
+echo "|------------|-----|----|--------------|" >> "$solutions"
 
 for graph in $graphs; do
 
@@ -32,6 +37,10 @@ for graph in $graphs; do
 	gurobi_cl ResultFile="$ilp_sol" "$ilp"
 	gurobi_cl ResultFile="$lp_sol" "$lp"
 
+	printf "| $graph |" >> "$solutions"
+	printf "$(head -n 1 "$ilp_sol" | cut -d " " -f 5) |" >> "$solutions"
+	printf "$(head -n 1 "$lp_sol" | cut -d " " -f 5) |" >> "$solutions"
+
 	cargo run -r -- --job dot-cut -i "$input" -o "$dot_ilp_cut" -s "$ilp_sol"
 	cargo run -r -- --job dot-flow -i "$input" -o "$dot_ilp_flow" -s "$ilp_sol"
 
@@ -48,7 +57,7 @@ for graph in $graphs; do
 	dot -T png "$dot_lp_flow" -o "images/png/$graph-lp-flow.png"
 	dot -T svg "$dot_lp_flow" -o "images/svg/$graph-lp-flow.svg"
 
-	cargo run -r -- --job apx -i "$input" -o "$dot_apx" -s "$lp_sol" >> apx.sol
+	echo "$(cargo run -r -- --job apx -i "$input" -o "$dot_apx" -s "$lp_sol" | cut -d " " -f 5) |" >> "$solutions"
 
 	dot -T png "$dot_apx" -o "images/png/$graph-apx.png"
 	dot -T svg "$dot_apx" -o "images/svg/$graph-apx.svg"

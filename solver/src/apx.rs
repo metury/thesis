@@ -59,6 +59,6 @@ pub fn approximate(inst: &crate::lp::Instance, graph: &DiGraph<f64, f64>) -> Has
 			best = size;
 		}
 	}
-	println!("The approximated size is {}.", best);
+	println!("The approximated size is {}", best);
 	cut
 }
