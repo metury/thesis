@@ -3,7 +3,7 @@ use petgraph::dot::{Config, Dot};
 use std::fs;
 use std::io::Write;
 
-mod aprox;
+mod apx;
 mod generator;
 mod lp;
 mod parser;
@@ -40,6 +40,33 @@ fn main() {
     } else if args.job == "lp" {
         let _ = lp::create_lp(false, &instance, &args.outputfile);
     } else if args.job == "apx" {
+        let (_, mut flow_graph) = parser::parse_solution(&args.solutionfile, instance.graph());
+        let cut = apx::approximate(&instance, &flow_graph);
+        for v in cut {
+            if let Some(weight) = flow_graph.node_weight_mut(v.into()) {
+                *weight = -1f64;
+            }
+        }
+        let file = fs::File::create(args.outputfile);
+        let dot = Dot::with_attr_getters(
+            &flow_graph,
+            &[],
+            &|_, edge| {
+                if *edge.weight() > 0f64 {
+                    format!("color=blue")
+                } else {
+                    format!("color=black")
+                }
+            },
+            &|_, (_, weight)| {
+                if weight == &-1f64 {
+                    format!("color=orange")
+                } else {
+                    format!("color=black")
+                }
+            },
+        );
+        let _ = writeln!(file.unwrap(), "{:?}", dot);
     } else if args.job == "dot" {
         let file = fs::File::create(args.outputfile);
         let _ = writeln!(
