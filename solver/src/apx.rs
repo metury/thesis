@@ -43,15 +43,15 @@ pub fn approximate(inst: &crate::lp::Instance, graph: &DiGraph<f64, f64>) -> Has
 		while cut_vertices.len() < inst.capacity() as usize {
 			cut_vertices.insert(current);
 			for e in graph.edges(current.into()) {
-				let (from, to) = (e.source(), e.target());
-				if from.index() as u32 == current {
-					neighbours.insert(to.index() as u32, *graph.node_weight(to).unwrap());
-				} else {
-					neighbours.insert(from.index() as u32, *graph.node_weight(from).unwrap());
+				let (from, to) = (e.source().index() as u32, e.target().index() as u32);
+				if from == current && !cut_vertices.contains(&to) && graph.node_weight(e.target()).unwrap() > &0f64 {
+					neighbours.insert(to, *graph.node_weight(e.target()).unwrap());
+				} else if to == current && !cut_vertices.contains(&from) && graph.node_weight(e.source()).unwrap() > &0f64{
+					neighbours.insert(from, *graph.node_weight(e.source()).unwrap());
 				}
-				let next = choose(&neighbours);
-				current = next.into();
 			}
+			let next = choose(&neighbours);
+			current = next.into();
 		}
 		let size = size_of_cut(&cut_vertices, graph);
 		if size < best {

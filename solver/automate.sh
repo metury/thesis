@@ -2,7 +2,7 @@
 
 set -ueo pipefail
 
-rm -rf graphs programs programs/lp programs/ilp programs/sol-ilp programs/sol-lp images images/dot images/png images/svg
+rm -rf graphs programs programs/lp programs/ilp programs/sol-ilp programs/sol-lp images images/dot images/png images/svg apx.sol
 
 mkdir -p graphs programs programs/lp programs/ilp programs/sol-ilp programs/sol-lp images images/dot images/png images/svg
 
@@ -21,6 +21,7 @@ for graph in $graphs; do
 	dot_lp_cut="images/dot/$graph-lp-cut.gv"
 	dot_ilp_flow="images/dot/$graph-ilp-flow.gv"
 	dot_lp_flow="images/dot/$graph-lp-flow.gv"
+	dot_apx="images/dot/$graph-apx.gv"
 
 	cargo run -r -- --job ilp -i "$input" -o "$ilp"
 	cargo run -r -- --job lp -i "$input" -o "$lp"
@@ -46,5 +47,10 @@ for graph in $graphs; do
 	dot -T svg "$dot_lp_cut" -o "images/svg/$graph-lp-cut.svg"
 	dot -T png "$dot_lp_flow" -o "images/png/$graph-lp-flow.png"
 	dot -T svg "$dot_lp_flow" -o "images/svg/$graph-lp-flow.svg"
+
+	cargo run -r -- --job apx -i "$input" -o "$dot_apx" -s "$lp_sol" >> apx.sol
+
+	dot -T png "$dot_apx" -o "images/png/$graph-apx.png"
+	dot -T svg "$dot_apx" -o "images/svg/$graph-apx.svg"
 
 done
