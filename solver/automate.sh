@@ -14,7 +14,6 @@ echo "| Graph name | ILP | LP | Aproximation |" > "$solutions"
 echo "|------------|-----|----|--------------|" >> "$solutions"
 
 for graph in $graphs; do
-
 	input="graphs/$graph.in"
 	ilp="programs/ilp/$graph.ilp"
 	lp="programs/lp/$graph.lp"
@@ -38,8 +37,8 @@ for graph in $graphs; do
 	gurobi_cl ResultFile="$lp_sol" "$lp"
 
 	printf "| $graph |" >> "$solutions"
-	printf "$(head -n 1 "$ilp_sol" | cut -d " " -f 5) |" >> "$solutions"
-	printf "$(head -n 1 "$lp_sol" | cut -d " " -f 5) |" >> "$solutions"
+	printf " $(head -n 1 "$ilp_sol" | cut -d " " -f 5) |" >> "$solutions"
+	printf " $(head -n 1 "$lp_sol" | cut -d " " -f 5) |" >> "$solutions"
 
 	cargo run -r -- --job dot-cut -i "$input" -o "$dot_ilp_cut" -s "$ilp_sol"
 	cargo run -r -- --job dot-flow -i "$input" -o "$dot_ilp_flow" -s "$ilp_sol"
@@ -57,9 +56,19 @@ for graph in $graphs; do
 	dot -T png "$dot_lp_flow" -o "images/png/$graph-lp-flow.png"
 	dot -T svg "$dot_lp_flow" -o "images/svg/$graph-lp-flow.svg"
 
-	echo "$(cargo run -r -- --job apx -i "$input" -o "$dot_apx" -s "$lp_sol" | cut -d " " -f 5) |" >> "$solutions"
+	echo " $(cargo run -r -- --job apx -i "$input" -o "$dot_apx" -s "$lp_sol" | cut -d " " -f 5) |" >> "$solutions"
 
 	dot -T png "$dot_apx" -o "images/png/$graph-apx.png"
 	dot -T svg "$dot_apx" -o "images/svg/$graph-apx.svg"
+done
 
+for graph in $graphs; do
+	echo "# $graph" >> "$solutions"
+	echo "" >> "$solutions"
+	echo "![](./images/svg/$graph.svg)" >> "$solutions"
+	echo "" >> "$solutions"
+	echo "![](./images/svg/$graph-lp-flow.svg)" >> "$solutions"
+	echo "" >> "$solutions"
+	echo "![](./images/svg/$graph-apx.svg)" >> "$solutions"
+	echo "" >> "$solutions"
 done
