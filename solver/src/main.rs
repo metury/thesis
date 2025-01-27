@@ -42,27 +42,23 @@ fn main() {
     } else if args.job == "apx" {
         let (_, mut flow_graph) = parser::parse_solution(&args.solutionfile, instance.graph());
         let cut = apx::approximate(&instance, &flow_graph);
-        for v in cut {
-            if let Some(weight) = flow_graph.node_weight_mut(v.into()) {
-                *weight = -1f64;
-            }
-        }
+        apx::update_graph(&mut flow_graph, &cut);
         let file = fs::File::create(args.outputfile);
         let dot = Dot::with_attr_getters(
             &flow_graph,
-            &[],
+            &[Config::EdgeNoLabel, Config::NodeNoLabel],
             &|_, edge| {
-                if *edge.weight() > 0f64 {
-                    format!("color=blue")
+                if *edge.weight() < 0f64 {
+                    format!("color=teal")
                 } else {
-                    format!("color=black")
+                    format!("color=grey")
                 }
             },
             &|_, (_, weight)| {
-                if weight == &-1f64 {
+                if weight < &0f64 {
                     format!("color=orange")
                 } else {
-                    format!("color=black")
+                    format!("color=grey")
                 }
             },
         );

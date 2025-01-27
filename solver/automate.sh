@@ -2,9 +2,9 @@
 
 set -ueo pipefail
 
-solutions="results.md"
+solutions="Results.md"
 
-rm -rf graphs programs programs/lp programs/ilp programs/sol-ilp programs/sol-lp images images/dot images/png images/svg "$solutions"
+rm -rf graphs programs programs/lp programs/ilp programs/sol-ilp programs/sol-lp images images/dot images/png images/svg "$solutions" "Results.pdf"
 
 mkdir -p graphs programs programs/lp programs/ilp programs/sol-ilp programs/sol-lp images images/dot images/png images/svg
 
@@ -67,8 +67,20 @@ for graph in $graphs; do
 	echo "" >> "$solutions"
 	echo "![](./images/svg/$graph.svg)" >> "$solutions"
 	echo "" >> "$solutions"
+	echo "## Linear program" >> "$solutions"
+	echo "" >> "$solutions"
+	echo "### Flow" >> "$solutions"
+	echo "" >> "$solutions"
 	echo "![](./images/svg/$graph-lp-flow.svg)" >> "$solutions"
+	echo "" >> "$solutions"
+	echo "### Cut" >> "$solutions"
+	echo "" >> "$solutions"
+	echo "![](./images/svg/$graph-lp-cut.svg)" >> "$solutions"
+	echo "" >> "$solutions"
+	echo "## Aproximation" >> "$solutions"
 	echo "" >> "$solutions"
 	echo "![](./images/svg/$graph-apx.svg)" >> "$solutions"
 	echo "" >> "$solutions"
 done
+
+pandoc "$solutions" -o Results.pdf

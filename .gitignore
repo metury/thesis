@@ -1,7 +1,8 @@
 programs/
 images/
 graphs/
-results.md
+Results.md
+Results.pdf
 
 ## Core latex/pdflatex auxiliary files:
 *.aux

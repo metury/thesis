@@ -31,6 +31,27 @@ fn size_of_cut(cut: &HashSet<u32>, graph: &DiGraph<f64, f64>) -> usize {
 	size
 }
 
+pub fn update_graph(graph: &mut DiGraph<f64, f64>, cut: &HashSet<u32>) {
+	for v in cut {
+		if let Some(weight) = graph.node_weight_mut((*v).into()) {
+			*weight = -1f64;
+		}
+	}
+	for e in graph.edge_indices() {
+		match graph.edge_endpoints(e) {
+			Some((from, to)) => {
+				if cut.contains(&(from.index() as u32)) && !cut.contains(&(to.index() as u32)) {
+					graph[e] = -1f64;
+				} else if !cut.contains(&(from.index() as u32)) && cut.contains(&(to.index() as u32)) {
+					graph[e] = -1f64;
+				}
+			}
+			None => continue,
+		}
+
+	}
+}
+
 pub fn approximate(inst: &crate::lp::Instance, graph: &DiGraph<f64, f64>) -> HashSet<u32> {
 	let mut cut: HashSet<u32> = Default::default();
 	let mut best = usize::MAX;
