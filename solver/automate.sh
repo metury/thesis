@@ -2,9 +2,9 @@
 
 set -ueo pipefail
 
-solutions="Results.md"
+solutions="results.md"
 
-rm -rf graphs programs programs/lp programs/ilp programs/sol-ilp programs/sol-lp images images/dot images/png images/svg "$solutions" "Results.pdf"
+rm -rf graphs programs programs/lp programs/ilp programs/sol-ilp programs/sol-lp images images/dot images/png images/svg "$solutions" "results.pdf"
 
 mkdir -p graphs programs programs/lp programs/ilp programs/sol-ilp programs/sol-lp images images/dot images/png images/svg
 
@@ -83,4 +83,4 @@ for graph in $graphs; do
 	echo "" >> "$solutions"
 done
 
-pandoc "$solutions" -o Results.pdf
+pandoc "$solutions" -o "results.pdf"
