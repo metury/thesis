@@ -475,6 +475,26 @@
 			\label{comet-graph}
 		\end{figure}
 	
+	\section{More sources}
+	
+	Now we will try to use our linear program to also introduce a solution for the multi-commodity case; when we have more sources and all of the parts have to be connected. In this particular case we are considering the case with minimizing the sum.
+	
+	\begin{equation}
+		\begin{array}{r l}
+			\min \sum_{e \in E} x_e \\
+			x_{uv} \geq \sum_{i \neq j \in [k]} f_u^i - f_v^j & \forall \{uv\} \in E\\
+			x_{uv} \geq \sum_{i \neq j \in [k]} f_v^i - f_u^j & \forall \{uv\} \in E\\
+			f_{s_i}^i = 1 & \forall i \in [k] \\
+			\sum_{u \in V, uv \in E} f_{uv}^i = \sum_{u \in V, vu \in E} f_{vu}^i + f_v^i & \forall v \in V, s \neq v, \forall i \in [k] \\
+			\sum_{i \in [k]} f_{u}^i = 1 & \forall u \in V \\
+			f_v^i \in \{0,1\} & \forall v \in V, \forall i \in [k] \\
+			f_{uv}^i \in \mathbb{R}^+ & \forall \{u,v\} \in E, \forall i \in [k] \\
+			x_{uv}^i \in \{0,1\} & \forall \{u,v\} \in E, \forall i \in [k]
+		\end{array}
+	\end{equation}
+
+	If we would like to minimize the maximal cut, then we would have to change it in a proper way.
+	
 	\section{Links}
 	
 	Here I am keeping some useful links.
