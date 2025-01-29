@@ -492,8 +492,59 @@
 			x_{uv}^i \in \{0,1\} & \forall \{u,v\} \in E, \forall i \in [k]
 		\end{array}
 	\end{equation}
-
 	If we would like to minimize the maximal cut, then we would have to change it in a proper way.
+	
+	\section{NP hardness}
+	
+	In this section we would like to provide a proof that $k$-connected cut with weights is NP complete problem. One can already see whats the definition of wights, but we will still clarify this. In $k$-connected cut we will also have a wight function $w : E \to \mathbb{R}^+_0$ and we want to minimize the sum of weights in the edge cut. That is the non-weighted version has constant  weight function equal to 1.
+	
+	Now we will state a well known NP complete problem: \textit{Knapsack}. That is we have $n$ items which we can enumerate with the set $[n] = \{1, 2, \dots, n\}$. Then we have weights of the items: $w [n] \to \mathbb{R}^+$ and also values: $v : [n] \to \mathbb{R}^+$. Lastly we also have a capacity $k$. The goal is to pick a subset $A \subseteq [n]$ such that $\sum_{a \in A} w(a) \leq k$ and the value $\sum_{a \in A} v(a)$ is maximized.
+	
+	Lets have an instance of knapsack problem; that is $(n, v, w, k)$ and we will create a graph where $G = (V,E)$ where $k$-connected weighted cut will correspond to the solution of knapsack problem.
+	
+	\subsection{Reduction}
+	
+	Firstly we will introduce a source vertex $s$. Then we will add $k - 1$ vertices which we will call null-vertices. These will be connected to $s$ and the edges will have weight 0. Then for every item in $[n]$ we will create a clique $K_{w(n)}$; that is the size os equal to the weight og an item. We will connect each clique to the source by one edge with the weight equal to the value of an item. Also the edges inside each clique will be equal to the value of the item.
+	
+	Note that we assume the weights and values are in $\mathbb{N}$. Which can be for numbers in $\mathbb{Q}$ done easily by scaling the numbers.
+	
+	\begin{observ}
+		For a solution $S \subseteq V$ of $k$-connected weighted cut when a vertex $v$ from a clique $K$ is inside $S$ then $K \subseteq S$.
+	\end{observ}
+
+	\begin{proof}
+		Suppose that is not the case and there is $u \in K$ such that $u \notin S$. Hence the cut inside the clique adds $(w(a)-1) \cdot v(a)$ which is clearly larger or equal then $v(a)$. Because if $w(a) = 1$ then it does not make sense, because if one vertex is chosen, then all are; since there is only one. So we would get equal or better solution by choosing null-vertices instead.
+	\end{proof}
+
+	If we assume the weights are at least 3, then it is strictly better.
+	
+	\begin{observ}
+		If at least two items can be chosen, then $s$ is inside best solution.
+	\end{observ}
+
+	\begin{proof}
+		This property arises from the fact that $s$ connects all parts together.
+	\end{proof}
+
+	Hence when we compute the $k$-connected weighted cut we obtain a set $S$ where $s \in S$ and for some indices $i_1, i_2, \dots, i_m$ the cliques $K_{i_1}, K_{i_2}, \dots, K_{i_m} \subseteq S$ and also some null-vertices are in $S$ as well. These cliques correspond to the chosen elements of the knapsack problem.
+	
+	\begin{thm}
+		This solution of the knapsack problem is optimal.
+	\end{thm}
+
+	\begin{proof}
+		Imagine we would have a better solution. Firstly consider case where an element $a$ can be added to the solution. This would mean that we have some unused capacity. Therefore in our cut we have used null vertices and we could instead use corresponding clique. But that would get us a better solution which is a contradiction. Hence in some sense it is at least good as greedily creating maximal set.
+		
+		Lets now suppose that there are items $a_1, a_2, \dots a_l \in S$ and $b_1, b_2, \dots b_m \notin S$ which can be exchanged for a better solution. In the cut we would have capacity for doing so. Also $b$'s add $\sum v(b)$ to the cut cost whereas the $a$'s would add $\sum v(a)$. But since $\sum v(b) > \sum v(a)$ it means that we would get a better cut, which is a contradiction with the optimality of the cut.
+	\end{proof}
+
+	\begin{observ}
+		The reduction is in polynomial time.
+	\end{observ}
+
+	\begin{proof}
+		We create 1 source vertex, $O(k)$ null vertices and $O(\sum_{a \in A} w(a))$ vertices for cliques. Then we add $O(k)$ edges for null vertices, $O(|A|)$ connections to the cliques and $O(\sum_{a \in A} w^2(a)$ edges inside each clique. Hence all together it is $O(W^2 + k)$ where $W = \sum_{a \in A} w(a)$.
+	\end{proof}
 	
 	\section{Links}
 	
