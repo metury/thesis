@@ -34,6 +34,17 @@ fn star(filepath: &str, n: u64, k: u64, s: u64) -> io::Result<()> {
     Ok(())
 }
 
+fn tree(filepath: &str, width: u64, height: u64, k: u64, s: u64) -> io::Result<()> {
+    let mut file = fs::File::create(filepath)?;
+    writeln!(file, "s={} k={}", s, k)?;
+    for i in 1..height {
+        for j in u64::pow(width, (i-1) as u32)..u64::pow(width, i as u32) {
+            writeln!(file, "[{};{}]", j, j / width)?;
+        }
+    }
+    Ok(())
+}
+
 // Create a predefined graphs.
 pub fn generate() {
     let _ = comet("graphs/comet.in", 10u64, 10u64, 12u64, 0u64);
@@ -46,4 +57,6 @@ pub fn generate() {
     println!("star");
     let _ = comet("graphs/path.in", 10u64, 10u64, 6u64, 0u64);
     println!("path");
+    let _ = tree("graphs/tree.in", 3u64, 6u64, 15u64, 0u64);
+    println!("tree");
 }
