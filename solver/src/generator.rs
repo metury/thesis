@@ -1,7 +1,7 @@
 use std::fs;
 use std::io::{self, Write};
 
-pub fn comet(filepath: &str, path_len: u64, star_size: u64, k: u64, s: u64) -> io::Result<()> {
+fn comet(filepath: &str, path_len: u64, star_size: u64, k: u64, s: u64) -> io::Result<()> {
     let mut file = fs::File::create(filepath)?;
     writeln!(file, "s={} k={}", s, k)?;
     for i in 1..path_len {
@@ -14,7 +14,7 @@ pub fn comet(filepath: &str, path_len: u64, star_size: u64, k: u64, s: u64) -> i
     Ok(())
 }
 
-pub fn clique(filepath: &str, n: u64, k: u64, s: u64) -> io::Result<()> {
+fn clique(filepath: &str, n: u64, k: u64, s: u64) -> io::Result<()> {
     let mut file = fs::File::create(filepath)?;
     writeln!(file, "s={} k={}", s, k)?;
     for i in 0..n {
@@ -25,7 +25,7 @@ pub fn clique(filepath: &str, n: u64, k: u64, s: u64) -> io::Result<()> {
     Ok(())
 }
 
-pub fn star(filepath: &str, n: u64, k: u64, s: u64) -> io::Result<()> {
+fn star(filepath: &str, n: u64, k: u64, s: u64) -> io::Result<()> {
     let mut file = fs::File::create(filepath)?;
     writeln!(file, "s={} k={}", s, k)?;
     for i in 1..n + 1 {
