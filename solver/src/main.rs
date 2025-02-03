@@ -127,7 +127,7 @@ fn main() {
         }
         let _ = lp::create_lp(false, &instance, &args.outputfile, &edges);
         if edges.len() > 0 {
-            println!("Enhance!");
+            println!("Enhanced!");
         }
     } else {
         println!("The job type {} is not known.", args.job);
