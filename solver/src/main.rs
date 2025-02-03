@@ -2,6 +2,7 @@ use clap::Parser;
 use petgraph::dot::{Config, Dot};
 use std::fs;
 use std::io::Write;
+use std::collections::HashSet;
 
 mod apx;
 mod generator;
@@ -36,9 +37,9 @@ fn main() {
     let instance = parser::read_file(&args.inputfile);
     // Start the job.
     if args.job == "ilp" {
-        let _ = lp::create_lp(true, &instance, &args.outputfile);
+        let _ = lp::create_lp(true, &instance, &args.outputfile, &Default::default());
     } else if args.job == "lp" {
-        let _ = lp::create_lp(false, &instance, &args.outputfile);
+        let _ = lp::create_lp(false, &instance, &args.outputfile, &Default::default());
     } else if args.job == "apx" {
         let (_, mut flow_graph) = parser::parse_solution(&args.solutionfile, instance.graph());
         let cut = apx::approximate(&instance, &flow_graph);
@@ -111,5 +112,24 @@ fn main() {
             },
         );
         let _ = writeln!(file.unwrap(), "{:?}", dot);
+    } else if args.job == "enh" {
+        let mut edges: HashSet<(usize, usize)> = Default::default();
+        let (cut_graph, flow_graph) = parser::parse_solution(&args.solutionfile, instance.graph());
+        for e in flow_graph.edge_indices() {
+            if let Some((from, to)) = flow_graph.edge_endpoints(e) {
+                if let Some(f) = cut_graph.find_edge(from, to) {
+                    if flow_graph.edge_weight(e).unwrap_or(&0f64) > &1f64 && cut_graph.edge_weight(f).unwrap_or(&0f64) > &0f64 {
+                        edges.insert((from.index(), to.index()));
+                        edges.insert((to.index(), from.index()));
+                    }
+                }
+            }
+        }
+        let _ = lp::create_lp(false, &instance, &args.outputfile, &edges);
+        if edges.len() > 0 {
+            println!("Enhance!");
+        }
+    } else {
+        println!("The job type {} is not known.", args.job);
     }
 }

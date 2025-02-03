@@ -3,6 +3,7 @@ use petgraph::graph::UnGraph;
 use petgraph::visit::EdgeRef;
 use std::fs;
 use std::io::{self, Write};
+use std::collections::HashSet;
 
 /// Shorter type for graph.
 pub type Graph = UnGraph<(), ()>;
@@ -30,7 +31,7 @@ impl Instance {
 }
 
 /// Create linear program and its integer version.
-pub fn create_lp(ilp: bool, inst: &Instance, ofile: &String) -> io::Result<()> {
+pub fn create_lp(ilp: bool, inst: &Instance, ofile: &String, edges: &HashSet<(usize, usize)>) -> io::Result<()> {
     let graph = &inst.g;
     let mut first = true;
     let distances = dijkstra(graph, inst.source().into(), None, |_| 1);
@@ -48,6 +49,15 @@ pub fn create_lp(ilp: bool, inst: &Instance, ofile: &String) -> io::Result<()> {
     }
     writeln!(file, "")?;
     writeln!(file, "Subject to")?;
+    // Forcing the edges.
+    for (from, to) in edges {
+        writeln!(
+            file,
+            "x_{0}_{1} = 0",
+            from,
+            to
+        )?;
+    }
     // Defining the cut x.
     for e in graph.edge_indices() {
         if let Some((from, to)) = graph.edge_endpoints(e) {
