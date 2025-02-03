@@ -12,7 +12,7 @@ mod parser;
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {
-    /// What job to do: ilp - integer linear program, lp - linear program, apx - approximate the result, dot - create dot file for graph.
+    /// What job to do: ilp - integer linear program, lp - linear program, apx - approximate the result, dot - create dot file for graph, dot-flow, dot-cut.
     #[arg(short, long)]
     job: String,
     /// Graph in the input file.
