@@ -4,14 +4,14 @@ set -ueo pipefail
 
 solutions="results.md"
 
-rm -rf graphs programs programs/lp programs/ilp programs/sol-ilp programs/sol-lp images images/dot images/png images/svg "$solutions" "results.pdf"
+rm -rf graphs programs programs/lp programs/ilp programs/sol-ilp programs/sol-lp images images/dot images/png images/svg "$solutions" "results.pdf" programs/enh programs/sol-enh
 
-mkdir -p graphs programs programs/lp programs/ilp programs/sol-ilp programs/sol-lp images images/dot images/png images/svg
+mkdir -p graphs programs programs/lp programs/ilp programs/sol-ilp programs/sol-lp images images/dot images/png images/svg programs/enh programs/sol-enh
 
 graphs=$(cargo run -r -- --job gen)
 
-echo "| Graph name | ILP | LP | Aproximation |" > "$solutions"
-echo "|------------|-----|----|--------------|" >> "$solutions"
+echo "| Graph name | ILP | LP | Enhancement | Aproximation |" > "$solutions"
+echo "|------------|-----|----|-------------|--------------|" >> "$solutions"
 
 for graph in $graphs; do
 	input="graphs/$graph.in"
@@ -19,12 +19,16 @@ for graph in $graphs; do
 	lp="programs/lp/$graph.lp"
 	ilp_sol="programs/sol-ilp/$graph.sol"
 	lp_sol="programs/sol-lp/$graph.sol"
+	enh="programs/enh/$graph.lp"
+	enh_sol="programs/sol-enh/$graph.sol"
 
 	dot="images/dot/$graph.gv"
 	dot_ilp_cut="images/dot/$graph-ilp-cut.gv"
 	dot_lp_cut="images/dot/$graph-lp-cut.gv"
 	dot_ilp_flow="images/dot/$graph-ilp-flow.gv"
 	dot_lp_flow="images/dot/$graph-lp-flow.gv"
+	dot_enh_flow="images/dot/$graph-enh-flow.gv"
+	dot_enh_cut="images/dot/$graph-enh-cut.gv"
 	dot_apx="images/dot/$graph-apx.gv"
 
 	cargo run -r -- --job ilp -i "$input" -o "$ilp"
@@ -40,6 +44,16 @@ for graph in $graphs; do
 	printf " $(head -n 1 "$ilp_sol" | cut -d " " -f 5) |" >> "$solutions"
 	printf " $(head -n 1 "$lp_sol" | cut -d " " -f 5) |" >> "$solutions"
 
+	enahnced=$(cargo run -r -- -j enh -i "$input" -s "$lp_sol" -o "$enh")
+	gurobi_cl ResultFile="$enh_sol" "$enh"
+
+	while [[ enhanced == "Enhance!" ]]; do
+		enahnced=$(cargo run -r -- -j enh -i "$input" -s "$enh_sol" -o "$enh")
+		gurobi_cl ResultFile="$enh_sol" "$enh"
+	done
+
+	printf " $(head -n 1 "$enh_sol" | cut -d " " -f 5) |" >> "$solutions"
+
 	cargo run -r -- --job dot-cut -i "$input" -o "$dot_ilp_cut" -s "$ilp_sol"
 	cargo run -r -- --job dot-flow -i "$input" -o "$dot_ilp_flow" -s "$ilp_sol"
 
@@ -47,6 +61,14 @@ for graph in $graphs; do
 	dot -T svg "$dot_ilp_cut" -o "images/svg/$graph-ilp-cut.svg"
 	dot -T png "$dot_ilp_flow" -o "images/png/$graph-ilp-flow.png"
 	dot -T svg "$dot_ilp_flow" -o "images/svg/$graph-ilp-flow.svg"
+
+	cargo run -r -- --job dot-cut -i "$input" -o "$dot_enh_cut" -s "$enh_sol"
+	cargo run -r -- --job dot-flow -i "$input" -o "$dot_enh_flow" -s "$enh_sol"
+
+	dot -T png "$dot_enh_cut" -o "images/png/$graph-enh-cut.png"
+	dot -T svg "$dot_enh_cut" -o "images/svg/$graph-enh-cut.svg"
+	dot -T png "$dot_enh_flow" -o "images/png/$graph-enh-flow.png"
+	dot -T svg "$dot_enh_flow" -o "images/svg/$graph-enh-flow.svg"
 
 	cargo run -r -- --job dot-cut -i "$input" -o "$dot_lp_cut" -s "$lp_sol"
 	cargo run -r -- --job dot-flow -i "$input" -o "$dot_lp_flow" -s "$lp_sol"
