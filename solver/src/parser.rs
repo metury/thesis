@@ -1,6 +1,7 @@
 use petgraph::graph::{DiGraph, UnGraph};
 use regex::Regex;
 use std::fs;
+use std::collections::HashSet;
 
 /// Read graph from file which is provided via a file path.
 /// Considered format of a graph is by giving out edges in a from [idfrom;idto].
@@ -81,4 +82,19 @@ pub fn parse_solution(
         }
     }
     (cut_graph, flow_graph)
+}
+
+pub fn update_edges(filepath: &str, edges: & mut HashSet<(usize, usize)>) {
+    if let Ok(contents) = fs::read_to_string(filepath) {
+        let regex = Regex::new(r"x_([0-9]+)_([0-9]+) = 0").unwrap();
+        for (_, [from_str, to_str]) in regex
+            .captures_iter(&contents)
+            .map(|c| c.extract())
+            {
+                let from = from_str.parse::<usize>().unwrap();
+                let to = to_str.parse::<usize>().unwrap();
+                edges.insert((from, to));
+                edges.insert((to, from));
+            }
+    }
 }

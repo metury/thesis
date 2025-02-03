@@ -113,6 +113,7 @@ fn main() {
         );
         let _ = writeln!(file.unwrap(), "{:?}", dot);
     } else if args.job == "enh" {
+        let mut enhanced = false;
         let mut edges: HashSet<(usize, usize)> = Default::default();
         let (cut_graph, flow_graph) = parser::parse_solution(&args.solutionfile, instance.graph());
         for e in flow_graph.edge_indices() {
@@ -121,12 +122,14 @@ fn main() {
                     if flow_graph.edge_weight(e).unwrap_or(&0f64) > &1f64 && cut_graph.edge_weight(f).unwrap_or(&0f64) > &0f64 {
                         edges.insert((from.index(), to.index()));
                         edges.insert((to.index(), from.index()));
+                        enhanced = true;
                     }
                 }
             }
         }
+        parser::update_edges(&args.outputfile, &mut edges);
         let _ = lp::create_lp(false, &instance, &args.outputfile, &edges);
-        if edges.len() > 0 {
+        if enhanced {
             println!("Enhanced!");
         }
     } else {

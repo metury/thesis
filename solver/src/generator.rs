@@ -57,6 +57,6 @@ pub fn generate() {
     println!("star");
     let _ = comet("graphs/path.in", 10u64, 10u64, 6u64, 0u64);
     println!("path");
-    //let _ = tree("graphs/tree.in", 3u64, 6u64, 15u64, 0u64);
-    //println!("tree");
+    let _ = tree("graphs/tree.in", 3u64, 6u64, 15u64, 0u64);
+    println!("tree");
 }
