@@ -4,9 +4,10 @@ set -ueo pipefail
 
 solutions="results.md"
 report="results.pdf"
-directories="graphs programs programs/lp programs/ilp programs/sol-ilp programs/sol-lp images images/dot images/png images/svg programs/enh programs/sol-enh"
+report_page="results.html"
+directories="graphs programs programs/lp programs/ilp programs/sol-ilp programs/sol-lp images images/dot images/pdf programs/enh programs/sol-enh"
 
-rm -rf $directories "$solutions" "$report"
+rm -rf $directories "$solutions" "$report" "$report_page"
 mkdir -p $directories
 
 graphs=$(cargo run -r -- --job gen)
@@ -37,6 +38,15 @@ for graph in $graphs; do
 	dot_enh_cut="images/dot/$graph-enh-cut.gv"
 	dot_apx="images/dot/$graph-apx.gv"
 
+	image="images/pdf/$graph.pdf"
+	pdf_ilp_cut="images/pdf/$graph-ilp-cut.pdf"
+	pdf_lp_cut="images/pdf/$graph-lp-cut.pdf"
+	pdf_ilp_flow="images/pdf/$graph-ilp-flow.pdf"
+	pdf_lp_flow="images/pdf/$graph-lp-flow.pdf"
+	pdf_enh_flow="images/pdf/$graph-enh-flow.pdf"
+	pdf_enh_cut="images/pdf/$graph-enh-cut.pdf"
+	pdf_apx="images/pdf/$graph-apx.pdf"
+
 	# +---------------------------------------------------+ #
 	# | Create ILP, LP and picture of the original graph. | #
 	# +---------------------------------------------------+ #
@@ -47,8 +57,7 @@ for graph in $graphs; do
 	# +-------------------------------------------+ #
 	# | Run the dot program and gurobi optimiser. | #
 	# +-------------------------------------------+ #
-	dot -T png "$dot" -o "images/png/$graph.png"
-	dot -T svg "$dot" -o "images/svg/$graph.svg"
+	dot -T pdf "$dot" -o "$image"
 	gurobi_cl ResultFile="$ilp_sol" "$ilp"
 	gurobi_cl ResultFile="$lp_sol" "$lp"
 
@@ -73,30 +82,24 @@ for graph in $graphs; do
 	# +------------------------+ #
 	cargo run -r -- --job dot-cut -i "$input" -o "$dot_ilp_cut" -s "$ilp_sol"
 	cargo run -r -- --job dot-flow -i "$input" -o "$dot_ilp_flow" -s "$ilp_sol"
-	dot -T png "$dot_ilp_cut" -o "images/png/$graph-ilp-cut.png"
-	dot -T svg "$dot_ilp_cut" -o "images/svg/$graph-ilp-cut.svg"
-	dot -T png "$dot_ilp_flow" -o "images/png/$graph-ilp-flow.png"
-	dot -T svg "$dot_ilp_flow" -o "images/svg/$graph-ilp-flow.svg"
+	dot -T pdf "$dot_ilp_cut" -o "$pdf_ilp_cut"
+	dot -T pdf "$dot_ilp_flow" -o "$pdf_ilp_flow"
 
 	# +-----------------------------+ #
 	# | Generate enhanced pictures. | #
 	# +-----------------------------+ #
 	cargo run -r -- --job dot-cut -i "$input" -o "$dot_enh_cut" -s "$enh_sol"
 	cargo run -r -- --job dot-flow -i "$input" -o "$dot_enh_flow" -s "$enh_sol"
-	dot -T png "$dot_enh_cut" -o "images/png/$graph-enh-cut.png"
-	dot -T svg "$dot_enh_cut" -o "images/svg/$graph-enh-cut.svg"
-	dot -T png "$dot_enh_flow" -o "images/png/$graph-enh-flow.png"
-	dot -T svg "$dot_enh_flow" -o "images/svg/$graph-enh-flow.svg"
+	dot -T pdf "$dot_enh_cut" -o "$pdf_enh_cut"
+	dot -T pdf "$dot_enh_flow" -o "$pdf_enh_flow"
 
 	# +-----------------------+ #
 	# | Generate LP pictures. | #
 	# +-----------------------+ #
 	cargo run -r -- --job dot-cut -i "$input" -o "$dot_lp_cut" -s "$lp_sol"
 	cargo run -r -- --job dot-flow -i "$input" -o "$dot_lp_flow" -s "$lp_sol"
-	dot -T png "$dot_lp_cut" -o "images/png/$graph-lp-cut.png"
-	dot -T svg "$dot_lp_cut" -o "images/svg/$graph-lp-cut.svg"
-	dot -T png "$dot_lp_flow" -o "images/png/$graph-lp-flow.png"
-	dot -T svg "$dot_lp_flow" -o "images/svg/$graph-lp-flow.svg"
+	dot -T pdf "$dot_lp_cut" -o "$pdf_lp_cut"
+	dot -T pdf "$dot_lp_flow" -o "$pdf_lp_flow"
 
 	# +------------------------+ #
 	# | Run the approximation. | #
@@ -106,8 +109,7 @@ for graph in $graphs; do
 	# +---------------------------------+ #
 	# | Generate approximated pictures. | #
 	# +---------------------------------+ #
-	dot -T png "$dot_apx" -o "images/png/$graph-apx.png"
-	dot -T svg "$dot_apx" -o "images/svg/$graph-apx.svg"
+	dot -T pdf "$dot_apx" -o "$pdf_apx"
 done
 
 # +------------------------------------------------------------+ #
@@ -115,37 +117,46 @@ done
 # +------------------------------------------------------------+ #
 for graph in $graphs; do
 	input="graphs/$graph.in"
+	image="images/pdf/$graph.pdf"
+	pdf_ilp_cut="images/pdf/$graph-ilp-cut.pdf"
+	pdf_lp_cut="images/pdf/$graph-lp-cut.pdf"
+	pdf_ilp_flow="images/pdf/$graph-ilp-flow.pdf"
+	pdf_lp_flow="images/pdf/$graph-lp-flow.pdf"
+	pdf_enh_flow="images/pdf/$graph-enh-flow.pdf"
+	pdf_enh_cut="images/pdf/$graph-enh-cut.pdf"
+	pdf_apx="images/pdf/$graph-apx.pdf"
 	echo "# $graph" >> "$solutions"
 	echo "" >> "$solutions"
 	echo "The source vertex is \$$(grep -Eoh "s=([0-9]+)" "$input")\$ and capacity is \$$(grep -Eoh "k=([0-9]+)" "$input")\$." >> "$solutions"
 	echo "" >> "$solutions"
-	echo "![](./images/svg/$graph.svg)" >> "$solutions"
+	echo "![]("$image")" >> "$solutions"
 	echo "" >> "$solutions"
 	echo "## Linear program" >> "$solutions"
 	echo "" >> "$solutions"
 	echo "### Flow" >> "$solutions"
 	echo "" >> "$solutions"
-	echo "![](./images/svg/$graph-lp-flow.svg)" >> "$solutions"
+	echo "![]("$pdf_lp_flow")" >> "$solutions"
 	echo "" >> "$solutions"
 	echo "### Cut" >> "$solutions"
 	echo "" >> "$solutions"
-	echo "![](./images/svg/$graph-lp-cut.svg)" >> "$solutions"
+	echo "![]("$pdf_lp_cut")" >> "$solutions"
 	echo "" >> "$solutions"
 	echo "## Enhancement" >> "$solutions"
 	echo "" >> "$solutions"
 	echo "### Flow" >> "$solutions"
 	echo "" >> "$solutions"
-	echo "![](./images/svg/$graph-enh-flow.svg)" >> "$solutions"
+	echo "![]("$pdf_enh_flow")" >> "$solutions"
 	echo "" >> "$solutions"
 	echo "### Cut" >> "$solutions"
 	echo "" >> "$solutions"
-	echo "![](./images/svg/$graph-enh-cut.svg)" >> "$solutions"
+	echo "![]("$pdf_enh_cut")" >> "$solutions"
 	echo "" >> "$solutions"
 	echo "## Aproximation" >> "$solutions"
 	echo "" >> "$solutions"
-	echo "![](./images/svg/$graph-apx.svg)" >> "$solutions"
+	echo "![]("$pdf_apx")" >> "$solutions"
 	echo "" >> "$solutions"
 done
 
-echo -e "\033[34;1mGenerating $report.\033[0"
+echo -e "\033[34;1mGenerating $report and $report_page.\033[0"
 pandoc "$solutions" -o "$report"
+pandoc "$solutions" -o "$report_page"
