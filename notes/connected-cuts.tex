@@ -15,6 +15,8 @@
 \usepackage{tikz}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 \hypersetup{linkbordercolor=WildStrawberry, urlbordercolor=RoyalPurple}
 
 \theoremstyle{plain}
@@ -404,6 +406,69 @@
 		\end{array}
 	\end{equation}
 
+	\section{Approximation}
+	
+	The final approximation we will employ is quite simple. That is we will have a vertex and a set of already chosen vertices. Firstly add $s$ to the set and set it as a current vertex. Then always look at neighbors with non-zero vertex flow and consider them as another choice. With the flow values choose one with these probabilities.
+	
+	\begin{algorithm}[!ht]
+		\begin{algorithmic}[1]
+			\Require A graph $G$ with source $s$ and capacity $k$ and flow $f$ on vertices from LP.
+			\Ensure A connected cut $S$.
+			\State $S \leftarrow \{s\}$ and $cv \leftarrow s$.
+			\While{$|S| < k$}
+				\ForAll{neighbors $v$ of $cv$}
+					\State If $v \notin S$ and $f(v) > 0$ add it to consideration.
+				\EndFor
+				\State Choose one vertex $u$ from the considered ones based on the $f$.
+				\State $S \leftarrow S \cup \{u\}$ and $cv \leftarrow u$.
+			\EndWhile
+			\State \Return $S$.
+		\end{algorithmic}
+		\caption{Approximation of the values from linear program.}
+	\end{algorithm}
+
+	\section{Improving the result}
+	
+	Also there is the fact that we want to have cut edges only when the flow is really low. Otherwise it does not make any sense. So either we may be improving our linear program along the way or just consider this during the approximation. That is we will call the edges with flow $> 1$ and cut $> 0$ as a bad edges. Then we will have a procedure which will enhance the linear program. We will gradually add bad edges to the LP statement where we set these to $0$.
+	
+	\begin{algorithm}[!ht]
+		\begin{algorithmic}[1]
+			\Require Graph $G$ with source $s$ and capacity $k$.
+			\Ensure Enhanced LP.
+			\State Solve the original LP.
+			\State $F = \emptyset$ and $cont = false$.
+			\While{$cont$}
+				\State $cont = false$.
+				\ForAll{edges $e$ in $G$}
+					\If{$f(e) > 1$ and $x(e) > 0$}
+						\State $F = F \cup \{e\}$.
+						\State $cont = true$.
+					\EndIf
+				\EndFor
+				\ForAll{$e$ in $F$}
+					\State Set $x(e) = 0$ in the LP.
+				\EndFor
+				\State Solve updated LP and update solution.
+			\EndWhile
+			\State \Return Last LP.
+		\end{algorithmic}
+		\caption{Enhancement}
+	\end{algorithm}
+	
+	Note that this enhancement will in worse case go through all edges, thus $m = |E|$. We should take a while and convince ourselves that this improvement does not diverge from the optimal solution, moreover it will get closer to some optimal solution.
+	
+	\begin{algorithm}[!ht]
+		\begin{algorithmic}[1]
+			\Require A graph $G$ with source $s$ and capacity $k$.
+			\Ensure A connected cut $S$ which minimizes its cost.
+			\State Create a LP.
+			\State Enhance the LP.
+			\State Solve the LP.
+			\State Use approximation algorithm to obtain $S$.
+			\State \Return $S$.
+		\end{algorithmic}
+		\caption{Connected cut algorithm.}
+	\end{algorithm}
 
 	\section{Example graphs}
 	
@@ -443,10 +508,6 @@
 		Comet graph contain a star and a tail -- hence the name comet.
 	\end{defn}
 
-	\section{Improving the result}
-	
-	Also there is the fact that we want to have cut edges only when the flow is really low. Otherwise it does not make any sense. So either we may be improving our linear program along the way or just consider this during the approximation.
-
 	\begin{figure}[!ht]\centering
 			\begin{tikzpicture}[main/.style = {draw, circle, inner sep=1.5pt}]
 					\node[main] (s) at (0,0) {$s$};
@@ -475,24 +536,24 @@
 			\label{comet-graph}
 		\end{figure}
 	
-	\section{More sources -- \textit{not correct}}
-	
-	Now we will try to use our linear program to also introduce a solution for the multi-commodity case; when we have more sources and all of the parts have to be connected. In this particular case we are considering the case with minimizing the sum.
-	
-	\begin{equation}
-		\begin{array}{r l}
-			\min \sum_{e \in E} x_e \\
-			x_{uv} \geq \sum_{i \neq j \in [k]} f_u^i - f_v^j & \forall \{uv\} \in E\\
-			x_{uv} \geq \sum_{i \neq j \in [k]} f_v^i - f_u^j & \forall \{uv\} \in E\\
-			f_{s_i}^i = 1 & \forall i \in [k] \\
-			\sum_{u \in V, uv \in E} f_{uv}^i = \sum_{u \in V, vu \in E} f_{vu}^i + f_v^i & \forall v \in V, s \neq v, \forall i \in [k] \\
-			\sum_{i \in [k]} f_{u}^i = 1 & \forall u \in V \\
-			f_v^i \in \{0,1\} & \forall v \in V, \forall i \in [k] \\
-			f_{uv}^i \in \mathbb{R}^+ & \forall \{u,v\} \in E, \forall i \in [k] \\
-			x_{uv}^i \in \{0,1\} & \forall \{u,v\} \in E, \forall i \in [k]
-		\end{array}
-	\end{equation}
-	If we would like to minimize the maximal cut, then we would have to change it in a proper way.
+%	\section{More sources -- \textit{not correct}}
+%	
+%	Now we will try to use our linear program to also introduce a solution for the multi-commodity case; when we have more sources and all of the parts have to be connected. In this particular case we are considering the case with minimizing the sum.
+%	
+%	\begin{equation}
+%		\begin{array}{r l}
+%			\min \sum_{e \in E} x_e \\
+%			x_{uv} \geq \sum_{i \neq j \in [k]} f_u^i - f_v^j & \forall \{uv\} \in E\\
+%			x_{uv} \geq \sum_{i \neq j \in [k]} f_v^i - f_u^j & \forall \{uv\} \in E\\
+%			f_{s_i}^i = 1 & \forall i \in [k] \\
+%			\sum_{u \in V, uv \in E} f_{uv}^i = \sum_{u \in V, vu \in E} f_{vu}^i + f_v^i & \forall v \in V, s \neq v, \forall i \in [k] \\
+%			\sum_{i \in [k]} f_{u}^i = 1 & \forall u \in V \\
+%			f_v^i \in \{0,1\} & \forall v \in V, \forall i \in [k] \\
+%			f_{uv}^i \in \mathbb{R}^+ & \forall \{u,v\} \in E, \forall i \in [k] \\
+%			x_{uv}^i \in \{0,1\} & \forall \{u,v\} \in E, \forall i \in [k]
+%		\end{array}
+%	\end{equation}
+%	If we would like to minimize the maximal cut, then we would have to change it in a proper way.
 	
 	\section{NP hardness}
 	
@@ -543,7 +604,7 @@
 	\end{observ}
 
 	\begin{proof}
-		We create 1 source vertex, $O(k)$ null vertices and $O(\sum_{a \in A} w(a))$ vertices for cliques. Then we add $O(k)$ edges for null vertices, $O(|A|)$ connections to the cliques and $O(\sum_{a \in A} w^2(a)$ edges inside each clique. Hence all together it is $O(W^2 + k)$ where $W = \sum_{a \in A} w(a)$.
+		We create 1 source vertex, $O(k)$ null vertices and $O(\sum_{a \in A} w(a))$ vertices for cliques. Then we add $O(k)$ edges for null vertices, $O(|A|)$ connections to the cliques and $O(\sum_{a \in A} w^2(a)$ edges inside each clique. Hence all together it is $O(W^2 + k)$ where $W = \sum_{a \in A} w(a)$. \textit{Perhaps there is a little catch. That is it is considering the wights as a values, which may be pseudo polynomial.}
 	\end{proof}
 	
 	\section{Links}
