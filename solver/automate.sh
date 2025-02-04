@@ -17,8 +17,8 @@ echo "# Report of running the connected cut algorithm" > "$solutions"
 echo "" >> "$solutions"
 echo "This is an automatically generated report which runs the algorithm on given graphs. There is a graph, its integer linear program solution, linear program solution, enhancement of the linear program and approximation result." >> "$solutions"
 echo "" >> "$solutions"
-echo "| Graph | ILP | LP | Enhancement | Aproximation |" >> "$solutions"
-echo "|-------|-----|----|-------------|--------------|" >> "$solutions"
+echo "| Graph | ILP | LP | Enhancement | Aproximation | Enh Apx |" >> "$solutions"
+echo "|-------|-----|----|-------------|--------------|---------|" >> "$solutions"
 
 for graph in $graphs; do
 	input="graphs/$graph.in"
@@ -37,6 +37,7 @@ for graph in $graphs; do
 	dot_enh_flow="images/dot/$graph-enh-flow.gv"
 	dot_enh_cut="images/dot/$graph-enh-cut.gv"
 	dot_apx="images/dot/$graph-apx.gv"
+	dot_apx_enh="images/dot/$graph-enh-apx.gv"
 
 	image="images/pdf/$graph.pdf"
 	pdf_ilp_cut="images/pdf/$graph-ilp-cut.pdf"
@@ -46,6 +47,7 @@ for graph in $graphs; do
 	pdf_enh_flow="images/pdf/$graph-enh-flow.pdf"
 	pdf_enh_cut="images/pdf/$graph-enh-cut.pdf"
 	pdf_apx="images/pdf/$graph-apx.pdf"
+	pdf_apx_enh="images/pdf/$graph-enh-apx.pdf"
 
 	# +---------------------------------------------------+ #
 	# | Create ILP, LP and picture of the original graph. | #
@@ -72,7 +74,7 @@ for graph in $graphs; do
 	# +---------------------+ #
 	# | Report the results. | #
 	# +---------------------+ #
-	printf "| $graph |" >> "$solutions"
+	printf "| [$graph](#$graph) |" >> "$solutions"
 	printf " $(head -n 1 "$ilp_sol" | cut -d " " -f 5) |" >> "$solutions"
 	printf " $(head -n 1 "$lp_sol" | cut -d " " -f 5) |" >> "$solutions"
 	printf " $(head -n 1 "$enh_sol" | cut -d " " -f 5) |" >> "$solutions"
@@ -104,12 +106,14 @@ for graph in $graphs; do
 	# +------------------------+ #
 	# | Run the approximation. | #
 	# +------------------------+ #
-	echo " $(cargo run -r -- --job apx -i "$input" -o "$dot_apx" -s "$lp_sol" | cut -d " " -f 5) |" >> "$solutions"
+	printf " $(cargo run -r -- --job apx -i "$input" -o "$dot_apx" -s "$lp_sol" | cut -d " " -f 5) |" >> "$solutions"
+	echo " $(cargo run -r -- --job apx -i "$input" -o "$dot_apx_enh" -s "$enh_sol" | cut -d " " -f 5) |" >> "$solutions"
 
 	# +---------------------------------+ #
 	# | Generate approximated pictures. | #
 	# +---------------------------------+ #
 	dot -T pdf "$dot_apx" -o "$pdf_apx"
+	dot -T pdf "$dot_apx_enh" -o "$pdf_apx_enh"
 done
 
 # +------------------------------------------------------------+ #
@@ -125,11 +129,22 @@ for graph in $graphs; do
 	pdf_enh_flow="images/pdf/$graph-enh-flow.pdf"
 	pdf_enh_cut="images/pdf/$graph-enh-cut.pdf"
 	pdf_apx="images/pdf/$graph-apx.pdf"
+	pdf_apx_enh="images/pdf/$graph-enh-apx.pdf"
 	echo "# $graph" >> "$solutions"
 	echo "" >> "$solutions"
 	echo "The source vertex is \$$(grep -Eoh "s=([0-9]+)" "$input")\$ and capacity is \$$(grep -Eoh "k=([0-9]+)" "$input")\$." >> "$solutions"
 	echo "" >> "$solutions"
 	echo "![]("$image")" >> "$solutions"
+	echo "" >> "$solutions"
+	echo "## Integer linear program" >> "$solutions"
+	echo "" >> "$solutions"
+	echo "### Flow" >> "$solutions"
+	echo "" >> "$solutions"
+	echo "![]("$pdf_ilp_flow")" >> "$solutions"
+	echo "" >> "$solutions"
+	echo "### Cut" >> "$solutions"
+	echo "" >> "$solutions"
+	echo "![]("$pdf_ilp_cut")" >> "$solutions"
 	echo "" >> "$solutions"
 	echo "## Linear program" >> "$solutions"
 	echo "" >> "$solutions"
@@ -154,6 +169,10 @@ for graph in $graphs; do
 	echo "## Aproximation" >> "$solutions"
 	echo "" >> "$solutions"
 	echo "![]("$pdf_apx")" >> "$solutions"
+	echo "" >> "$solutions"
+	echo "## Aproximation - enhanced" >> "$solutions"
+	echo "" >> "$solutions"
+	echo "![]("$pdf_apx_enh")" >> "$solutions"
 	echo "" >> "$solutions"
 done
 
