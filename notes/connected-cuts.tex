@@ -52,7 +52,7 @@
 	
 	We will now proceed to some definitions of cuts which are in one way or another connected (meaning that they induce a connected subgraph). We will start simply and build on that.
 	
-	\subsection{Single cuts}
+	\subsection{Single commodity connected cuts}
 	
 	\begin{defn}[Connected cut]
 		For a connected graph $G = (V,E)$ we define connected cut as $S \subseteq V$ for which $G[S]$ is connected. The cut itself is $E(S, V \setminus S)$. Later on we may exchange if we will talk about vertices or edges. Also $(V, E \setminus E(S, V \setminus S))$ is a disconnected graph.
@@ -80,11 +80,11 @@
 		\label{def-connected-s-t-cut}
 	\end{defn}
 
-	\subsection{Multi commodity cuts}
+	\subsection{Multi commodity connected cuts}
 
 	Now we can furthermore generalize the notion of connected cuts to multi-way connected cuts.
 	
-	\begin{defn}[Multi-way connected cut]
+	\begin{defn}[Multi-way connected cut with sources]
 		For a connected graph $G = (V,E)$ and pairwise distinct vertices $s_1, s_2, \dots, s_k \in V$ for $k \in \mathbb{N}$ we define connected cut as partition $\mathcal{V} = \{V_1, V_2, \dots, V_k\}$ of vertices (that is $\bigcup_{i = 1, \dots, k} V_i = V$ and for $i \neq j$ $V_i \cap V_j = \emptyset$) such that the following holds:
 		
 		\begin{enumerate}
@@ -93,7 +93,7 @@
 		\end{enumerate}
 	\end{defn}
 	
-	In this specific definitions we may look at our problem from two perspective. Those two options can be seen by the optimization function for the given problem. Sum version is generally more easy to find the solution, or at least very good approximation. On the other hand optimizing over the max function can be way more tricky. Observe that the sum size is already computed with multi-commodity cut.
+	In this specific definitions we may look at our problem from two perspective. Those two options can be seen by the optimization function for the given problem. Sum version is generally more easy to find the solution, or at least very good approximation. On the other hand optimizing over the max function can be way more tricky.
 	
 	\begin{itemize}
 		\item \textit{Sum} size as $\sum_{i < j} E(V_i, V_j)$.
@@ -101,6 +101,18 @@
 	\end{itemize}
 	
 	 Also we may define \textbf{Flexible multi-way connected cut} as relaxing the previous problem. That is the partition will have $l$ partitions where $0 < l \leq k$ and only $l$ sources are representing their partition. So $\forall i \in [l] , \exists k : s_k \in V_l$.
+	 
+	 We may also present another problem which is similar to the previously mentioned one, the only change is that we do not have predefined sources.
+	 
+	 \begin{defn}[Multi-way connected cut]
+	 	For a connected graph $G = (V,E)$ and $k \in \mathbb{N}$ we define connected cut as partition $\mathcal{V} = \{V_1, V_2, \dots, V_k\}$ of vertices (that is $\bigcup_{i = 1, \dots, k} V_i = V$ and for $i \neq j$ $V_i \cap V_j = \emptyset$) such that the following holds:
+	 	
+	 	\begin{enumerate}
+	 		\item $\forall i \in [k]: G[V_i]$ is connected.
+	 	\end{enumerate}
+	 \end{defn}
+ 
+ 	Then we would like to minimize the maximum $\max_{i \neq j} e(V_i, V_j)$.
 	
 	\subsection{Other cuts}
 	
@@ -137,7 +149,7 @@
 		\end{enumerate}
 	\end{defn}
 	
-	One can already see that it resembles a linear program. Some can expect we would define a size of the flow, but in this special instance we won't be defining it, since the main purpose is to look at the cut, which is defined by the flow. So now we will define the cut.
+	One can already see that it resembles a linear program. Some can expect we would define a size of the flow, but in this special instance we won't be defining it, since the main purpose is to look at the cut, which is defined by the flow. So now we will define the cut. But also in that case we would like to enforce that when a flow passes through a vertex then some of the value gets absorbed.
 	
 	\subsection{Induced cut by the absorptive flow}
 	
