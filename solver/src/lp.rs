@@ -30,7 +30,7 @@ impl Instance {
     }
 }
 
-/// Create linear program and its integer version.
+/// Create linear program and its integer version. Also enforce the edges to have cut of size 0.
 pub fn create_lp(ilp: bool, inst: &Instance, ofile: &String, edges: &HashSet<(usize, usize)>) -> io::Result<()> {
     let graph = &inst.g;
     let mut first = true;

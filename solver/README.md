@@ -1,32 +1,21 @@
-# Graph parser
+# Connected cut solver
 
-The provided graph parser is written in `rust` and by running `cargo run -- --help` you get all options. It is mainly for parsing graphs to `lp` or `ilp` format.
+There is a solver (more precisely a parser) for Connected cut problem, where we have to choose $k$ vertices so they induce a connected subgraph and the edges defined by such subset is minimized. Also a source vertex is predefined, that is a vertex $s$ which has to be in the solution.
 
-Next you run `gurobi_cl ResultFile="graph.sol" graph.lp` to solve the linear program.
+## Automation with script `automate.sh`
 
-## Given instance is a graph
+There is a `bash` script which automates the whole process. Note that `gurobi_cl` must be present and also `dot`, `pandoc` and `rust`. Then it it enough to just run `./automate.sh`.
 
-```mermaid
-graph LR;
-    0 --- 1 --- 2 --- 3 --- 4 --- 5 --- 6 --- 7 --- 8 --- 9;
-    0 --- 10 --- 11 & 12 & 13 & 14 & 15 & 16 & 17 & 18 & 19 & 20;
-```
+## Rust parser
 
-In text for parser it is.
+One can also run just the parser. There are multiple purposes.
 
-```txt
-s=0
-k=6
-[0;1][1;2][2;3][3;4][4;5][5;6][6;7][7;8][8;9] # The path.
-[0;10][10;11][10;12][10;13][10;14][10;15][10;16][10;17][10;18][10;19][10;20]
-```
+1. LP generation
+2. ILP generation
+3. Running APX program
+4. Create DOT picture.
+5. Create DOT from flow result.
+6. Create DOT from cut result.
+7. ENHance the linear program.
 
-### Optimal value
-
-Optimal value of the flow is following.
-
-```mermaid
-graph LR;
-    0 -- "5" ---  1 -- "4" --- 2 -- "3" --- 3 -- "2" --- 4 -- "1" --- 5 --- 6 --- 7 --- 8 --- 9;
-    0 --- 10 --- 11 & 12 & 13 & 14 & 15 & 16 & 17 & 18 & 19 & 20;
-```
+You may run `cargo run --release -- --help` to see details.

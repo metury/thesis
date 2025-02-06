@@ -1,6 +1,7 @@
 use std::fs;
 use std::io::{self, Write};
 
+/// Create a graph with a path and star at the end.
 fn comet(filepath: &str, path_len: u64, star_size: u64, k: u64, s: u64) -> io::Result<()> {
     let mut file = fs::File::create(filepath)?;
     writeln!(file, "s={} k={}", s, k)?;
@@ -14,6 +15,7 @@ fn comet(filepath: &str, path_len: u64, star_size: u64, k: u64, s: u64) -> io::R
     Ok(())
 }
 
+/// Create a clique graph.
 fn clique(filepath: &str, n: u64, k: u64, s: u64) -> io::Result<()> {
     let mut file = fs::File::create(filepath)?;
     writeln!(file, "s={} k={}", s, k)?;
@@ -25,6 +27,7 @@ fn clique(filepath: &str, n: u64, k: u64, s: u64) -> io::Result<()> {
     Ok(())
 }
 
+/// Create a star graph.
 fn star(filepath: &str, n: u64, k: u64, s: u64) -> io::Result<()> {
     let mut file = fs::File::create(filepath)?;
     writeln!(file, "s={} k={}", s, k)?;
@@ -34,6 +37,7 @@ fn star(filepath: &str, n: u64, k: u64, s: u64) -> io::Result<()> {
     Ok(())
 }
 
+/// Create a ordinary regular tree.
 fn tree(filepath: &str, width: u64, height: u64, k: u64, s: u64) -> io::Result<()> {
     let mut file = fs::File::create(filepath)?;
     writeln!(file, "s={} k={}", s, k)?;
@@ -45,6 +49,7 @@ fn tree(filepath: &str, width: u64, height: u64, k: u64, s: u64) -> io::Result<(
     Ok(())
 }
 
+/// Create petersen graph.
 fn petersen(filepath: &str,k: u64, s: u64) -> io::Result<()> {
     let mut file = fs::File::create(filepath)?;
     writeln!(file, "s={} k={}", s, k)?;

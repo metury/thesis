@@ -9,21 +9,21 @@ mod generator;
 mod lp;
 mod parser;
 
-/// These arguments are available. You must select a job and than provide an input file to the graph.
+/// Run this program by selecting a job first. Then input, output and solution file may be required to parse the file.
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {
-    /// What job to do: ilp - integer linear program, lp - linear program, apx - approximate the result, dot - create dot file for graph, dot-flow, dot-cut.
+    /// What job to do. Possible choices: ilp | lp | apx | dot | dot-flow | dot-cut | enh | gen
     #[arg(short, long)]
     job: String,
     /// Graph in the input file.
-    #[arg(short,long, default_value_t = String::new())]
+    #[arg(short,long, default_value_t = String::from("input.in"))]
     inputfile: String,
     /// Where to output the result.
-    #[arg(short,long, default_value_t = String::new())]
+    #[arg(short,long, default_value_t = String::from("output.out"))]
     outputfile: String,
     /// Where is the file with the solution.
-    #[arg(short,long, default_value_t = String::new())]
+    #[arg(short,long, default_value_t = String::from("solution.sol"))]
     solutionfile: String,
 }
 

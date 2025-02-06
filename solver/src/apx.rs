@@ -3,6 +3,7 @@ use petgraph::visit::EdgeRef;
 use std::collections::{HashMap, HashSet};
 use rand::prelude::*;
 
+/// Randomly choose from neighbours based on their values.
 fn choose(neighbours: &HashMap<u32, f64>) -> u32 {
 	let total_weight: f64 = neighbours.iter().map(|(_, weight)| weight).sum();
 	let normalized_elements: Vec<_> = neighbours
@@ -18,6 +19,7 @@ fn choose(neighbours: &HashMap<u32, f64>) -> u32 {
 	*chosen_element.unwrap().0
 }
 
+/// Compute the size of the cut.
 fn size_of_cut(cut: &HashSet<u32>, graph: &DiGraph<f64, f64>) -> usize {
 	let mut size = 0;
 	for e in graph.edge_references() {
@@ -31,6 +33,7 @@ fn size_of_cut(cut: &HashSet<u32>, graph: &DiGraph<f64, f64>) -> usize {
 	size
 }
 
+/// Set weights of edges to -1 if they are in the cut and similarly for vertices.
 pub fn update_graph(graph: &mut DiGraph<f64, f64>, cut: &HashSet<u32>) {
 	for v in cut {
 		if let Some(weight) = graph.node_weight_mut((*v).into()) {
@@ -52,6 +55,7 @@ pub fn update_graph(graph: &mut DiGraph<f64, f64>, cut: &HashSet<u32>) {
 	}
 }
 
+/// Run the approximation capacity-times on the given graph and solution of the LP.
 pub fn approximate(inst: &crate::lp::Instance, graph: &DiGraph<f64, f64>) -> HashSet<u32> {
 	let mut cut: HashSet<u32> = Default::default();
 	let mut best = usize::MAX;
