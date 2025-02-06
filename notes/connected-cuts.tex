@@ -43,6 +43,22 @@
 	
 	\tableofcontents
 	
+	\section*{Links}
+	
+	Here I am keeping some useful links.
+	
+	\begin{enumerate}
+		\item \href{https://www.semanticscholar.org/paper/Approximating-unique-games-Gupta-Talwar/a90ecfd407e1730c9039fdc46e7efefcc46dcfda}{Approximating unique games}
+		\item \href{https://www.khoury.northeastern.edu/home/austin/papers/bisection.pdf}{Minimum Bisection}
+		\item \href{https://epubs.siam.org/doi/abs/10.1137/120873996}{Min max and small set expansion}
+		\item \href{https://link.springer.com/article/10.1007/s00453-021-00870-3}{Approximation algorithms for maximally balanced connected graph partition}
+		\item \href{https://www.sciencedirect.com/science/article/pii/S0304397515009378}{On size-constrained minimum s–t cut problems and size-constrained dense subgraph problems}
+		\item \href{https://link.springer.com/article/10.1007/s10107-023-01987-9}{On the minimum $s-t$ cut problem with budget constraints}
+		\item \href{https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ESA.2021.26}{Balanced Crown Decomposition for Connectivity Constraints}
+		\item \href{https://www.cs.cornell.edu/~rdk/papers/conflu.pdf}{(Almost) Tight Bounds and Existence Theorems for Single-Commodity Confluent Flows, 2007}
+		\item \href{https://ieee-focs.org/FOCS-2015-Papers/8191a748.pdf}{Polylogarithmic Approximations for the Capacitated Single-Sink Conﬂuent Flow Problem, 2015}
+	\end{enumerate}
+	
 	\section{Preliminaries}
 	
 	We define graph $G = (V,E)$ as usual. Then we talk about edges defined by a cut in the following way. For vertices $S \subseteq V$ we define $E(S, V \setminus S) = \{e \in E \text{ s.t. } |e \cap S| = 1\}$, then the size of a cut is $e(S, V \setminus S) = |E(S, V \setminus S)|$. Also we will talk about the induced subgraphs which will be denoted as $G[S]$ for some vertices $S \subseteq V$. Just to recall that graph is called connected if between every pair of vertices there exists a walk. Also in most cases we will be considering graphs which are connected, but sometimes this is not necessary.
@@ -617,20 +633,5 @@
 
 	\begin{proof}
 		We create 1 source vertex, $O(k)$ null vertices and $O(\sum_{a \in A} w(a))$ vertices for cliques. Then we add $O(k)$ edges for null vertices, $O(|A|)$ connections to the cliques and $O(\sum_{a \in A} w^2(a)$ edges inside each clique. Hence all together it is $O(W^2 + k)$ where $W = \sum_{a \in A} w(a)$. \textit{Perhaps there is a little catch. That is it is considering the wights as a values, which may be pseudo polynomial.}
-	\end{proof}
-	
-	\section{Links}
-	
-	Here I am keeping some useful links.
-	
-	\begin{enumerate}
-		\item \href{https://www.semanticscholar.org/paper/Approximating-unique-games-Gupta-Talwar/a90ecfd407e1730c9039fdc46e7efefcc46dcfda}{Approximating unique games}
-		\item \href{https://www.khoury.northeastern.edu/home/austin/papers/bisection.pdf}{Minimum Bisection}
-		\item \href{https://epubs.siam.org/doi/abs/10.1137/120873996}{Min max and small set expansion}
-		\item \href{https://link.springer.com/article/10.1007/s00453-021-00870-3}{Approximation algorithms for maximally balanced connected graph partition}
-		\item \href{https://www.sciencedirect.com/science/article/pii/S0304397515009378}{On size-constrained minimum s–t cut problems and size-constrained dense subgraph problems}
-		\item \href{https://link.springer.com/article/10.1007/s10107-023-01987-9}{On the minimum $s-t$ cut problem with budget constraints}
-		\item \href{https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ESA.2021.26}{Balanced Crown Decomposition for Connectivity Constraints}
-	\end{enumerate}
-	
+	\end{proof}	
 \end{document}
