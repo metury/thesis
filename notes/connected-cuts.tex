@@ -459,6 +459,12 @@
 	
 	Now we have two options for optimizing the values. Firstly the sum would be $\min \sum_{e \in E} \sum_{i \in [k]} x_e^i$. For min-max problem we would do a simple trick, which would be adding a constraints $\forall i \in [k]: \ \sum_{e \in E} x_e^i \leq c$ and now we will minimize $\min c$.
 	
+	\section{Not fixed $k$}
+	
+	We have presented a linear program for $k$-connected cut problem, but we may also use this for the case of just connected cut. That is $k$ will become a variable instead of a parameter. But one must see that if we will set $k$ to be in a range $[n]$ then surely the optimal value will be $k = n$ i.e. selecting all vertices, but this is not a valid cut. Thus we need $k \leq n-1$.
+	
+	Note that this problem is already solve by usual minimal cut. That is due to the fact, that when we have a $s-t$ flow then the cut induced by such cut known from the Fast Fulkerson algorithm already creates an  set $S$ which induces a connected subgraph $G[S]$.
+	
 	\section{NP hardness}
 	
 	In this section we would like to provide a proof that $k$-connected cut with weights is NP complete problem. One can already see whats the definition of wights, but we will still clarify this. In $k$-connected cut we will also have a wight function $w : E \to \mathbb{R}^+_0$ and we want to minimize the sum of weights in the edge cut. That is the non-weighted version has constant  weight function equal to 1.
