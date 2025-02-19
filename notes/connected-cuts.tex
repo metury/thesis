@@ -3,8 +3,6 @@
 \usepackage{geometry}
 \geometry{a4paper,total={170mm,257mm},left=20mm,top=20mm}
 
-\renewcommand{\familydefault}{\sfdefault}
-
 \usepackage{babel}
 \usepackage[utf8]{inputenc}
 
@@ -58,7 +56,7 @@
 		\item \href{https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ESA.2021.26}{Balanced Crown Decomposition for Connectivity Constraints}
 		\item \href{https://www.cs.cornell.edu/~rdk/papers/conflu.pdf}{(Almost) Tight Bounds and Existence Theorems for Single-Commodity Confluent Flows, 2007}
 		\item \href{https://ieee-focs.org/FOCS-2015-Papers/8191a748.pdf}{Polylogarithmic Approximations for the Capacitated Single-Sink Conﬂuent Flow Problem, 2015}
-		\item \href{https://www.semanticscholar.org/paper/Network-Flows%3A-Theory%2C-Algorithms%2C-and-Applications-Ahuja-Magnanti/68d54f9dacbb5416c1aafb3399c072497c320021}{R. K. Ahuja, T. L. Magnati, J. B. Orlin. Network Flows: Theory, Algorithms, and Applications, Pearson, 1993.}
+		\item R. K. Ahuja, T. L. Magnati, J. B. Orlin. Network Flows: Theory, Algorithms, and Applications, Pearson, 1993.
 	\end{itemize}}
 	
 	\section{Preliminaries}
@@ -282,139 +280,6 @@
 	\end{observ}
 
 	Now it is also a time to talk about integrality, moreover what will happen if we switch to lp relaxation.
-	
-%	\subsection{Example (which is not correct anymore)}
-%	
-%	Now consider a simple example of a graph $G$ which is depicted on picture \ref{star-graph}. It is a so called star, where $v$ is the center point with $\Delta$ neighbors. In this special instance $s$ is already provided, now we need to set $k = 2$.
-%	
-%	\begin{figure}[!ht]\centering
-%		\begin{tikzpicture}[main/.style = {draw, circle, inner sep=1.5pt}]
-%			\node[main] (s) at (0,0) {$s$};
-%			\node[main] (v) at (3,0) {$v$};
-%			\node[main] (u) at (6,0) {$u$};
-%			\node[main] (3) at (3,3) {};
-%			\node[main] (1) at (1,2) {};
-%			\node[main] (2) at (2,2.5) {};
-%			\node[main] (5) at (5,2) {};
-%			\draw[dotted] (3) to (5);
-%			
-%			\draw (s) -- (v);
-%			\draw (v) -- (u);
-%			\draw (v) -- (1);
-%			\draw (v) -- (2);
-%			\draw (v) -- (3);
-%			\draw (v) -- (5);
-%		\end{tikzpicture}
-%		\caption{Star graph $G$ with special vertices $v,s$ and $u$.}
-%		\label{star-graph}
-%	\end{figure}
-%
-%	We can easily observe that the optimal solution of such connected $s$ cut is by setting $S = \{s,v\}$ since if $s \in S$ and $G[S]$ has to be connected we can only choose $v$, so that also $|S| = k = 2$. But mainly we are interested in observing how will the integer or linear relaxation of our program work on such instance.
-%	
-%	\begin{observ}
-%		Integer linear program will find the optimal solution.
-%	\end{observ}
-%
-%	\begin{proof}
-%		See that $f(s) = 1$ and $f(sv) = 1$ thus $f(v) \geq \frac{1}{\Delta (2-1)} 1 = \frac{1}{\Delta}$. From the property that we have integer variables $f(v)$ must be 1. And hence we absorbed the whole flow and satisfied all constraints. Also the solution can be seen on the picture \ref{star-graph-ilp}.
-%	\end{proof}
-%
-%	\begin{figure}[!ht]\centering
-%		\begin{tikzpicture}[main/.style = {draw, circle, inner sep=1.5pt},
-%			flow/.style = {Salmon},
-%			cut/.style = {dashed, PineGreen}]
-%			\node[main,flow] (s) at (0,0) {$1$};
-%			\node[main,flow] (v) at (3,0) {$1$};
-%			\node[main] (u) at (6,0) {$u$};
-%			\node[main] (3) at (3,3) {};
-%			\node[main] (1) at (1,2) {};
-%			\node[main] (2) at (2,2.5) {};
-%			\node[main] (5) at (5,2) {};
-%			\draw[dotted] (3) to (5);
-%			
-%			\draw[flow, ->, thick] (s) -- (v) node[midway, above] {$1$};
-%			\draw[cut] (v) -- (u) node[midway, above] {$1$};
-%			\draw[cut] (v) -- (1) node[midway, above, right] {$1$};
-%			\draw[cut] (v) -- (2) node[midway, above, right] {$1$};
-%			\draw[cut] (v) -- (3) node[midway, right] {$1$};
-%			\draw[cut] (v) -- (5) node[midway, above left] {$1$};
-%		\end{tikzpicture}
-%		\caption{Absorbing flow of the integer program.}
-%		\label{star-graph-ilp}
-%	\end{figure}
-%
-%	\begin{observ}
-%		Linear relaxation will provide a solution with $S = V$ and $x_e > 0$ only for edge $sv$. 
-%	\end{observ}
-%
-%	\begin{proof}
-%		The starting point is the same as in previous case, that is $f(s) = 1$ and $f(sv) = 1$. Then we have that $f(v) \geq \frac{1}{\Delta}$. Now suppose that all $N[v] \setminus s$ will have the same value of $f$. So that the cut edge will be only one $sv$.
-%		
-%		Firstly we must see that this is indeed possible. What if we set $f(vx) = \frac{1}{\Delta}$ for all such neighbors $x \in N[v] \setminus s$, and also $f(x) = \frac{1}{\Delta}$. We have to check if such solution is indeed feasible. Lets sum all
-%		
-%		$$
-%		\sum_{v \in V} f(v) = f(s) + \sum_{v \in V \setminus s} f(v) = 1 + \sum_{v \in V \setminus s} \frac{1}{\Delta} = 1 + (1 + \Delta - 1) \frac{1}{\Delta} = 1 + \frac{\Delta}{\Delta} = 2
-%		$$
-%		
-%		Therefore we have satisfied the constrained of $k$ chosen vertices. Also we can see that the other properties still indeed hold, which are not so hard. For example the flow follow its restrictions. And we have the found the solution given in this observation and shown that it is feasible. The solution is shown on the picture \ref{star-graph-lp}. Now the value of the optimization function is $1 - \frac{1}{\Delta} = \frac{\Delta - 1}{\Delta}$, which $\frac{1}{\Delta}$ times less then the OPT.
-%		
-%		Lastly we have to see that this is indeed optimal. What can be changed? Only the value of $f(v)$ and flows from vertex $v$. Suppose we would move $\lambda$ back from $u$ to $v$. This will increase $f(v)$ to $\frac{1}{\Delta} + \lambda$ and decreased both $f(u)$ and $f(vu)$ by $\lambda$. This will decrease $x(sv)$ by $\lambda$ and increased $f(vx)$ by $\lambda$ for all neighbors of $v$ without $u,s$. Because for $x(vu)$ we will now have $2 \lambda$ so in total we haven't made a better solution. We would need to split $\lambda$ amongst all $\Delta -2$ such neighbors. But then we will again increase $x(sv)$, so we are in a dead end. All other cases are similar.
-%	\end{proof}
-%
-%	\begin{figure}[!ht]\centering
-%		\begin{subfigure}{.4\textwidth}\centering
-%			\begin{tikzpicture}[main/.style = {draw, circle, inner sep=1.5pt},
-%				flow/.style = {Salmon},
-%				cut/.style = {dashed, PineGreen}]
-%				\node[main,flow] (s) at (0,0) {$1$};
-%				\node[main,flow] (v) at (3,0) {$\frac{1}{\Delta}$};
-%				\node[main, flow] (u) at (6,0) {$\frac{1}{\Delta}$};
-%				\node[main, flow] (3) at (3,3) {$\frac{1}{\Delta}$};
-%				\node[main, flow] (1) at (1,2) {$\frac{1}{\Delta}$};
-%				\node[main, flow] (2) at (2,2.5) {$\frac{1}{\Delta}$};
-%				\node[main, flow] (5) at (5,2) {$\frac{1}{\Delta}$};
-%				\draw[dotted, flow] (3) to (5);
-%				
-%				\draw[flow, ->, thick] (s) -- (v) node[midway, above] {$1$};
-%				\draw[flow, ->, thick] (v) -- (u) node[midway, above] {$\frac{1}{\Delta}$};
-%				\draw[flow, ->, thick] (v) -- (1) node[midway, above, right] {$\frac{1}{\Delta}$};
-%				\draw[flow, ->, thick] (v) -- (2) node[midway, above, right] {$\frac{1}{\Delta}$};
-%				\draw[flow, ->, thick] (v) -- (3) node[midway, right] {$\frac{1}{\Delta}$};
-%				\draw[flow, ->, thick] (v) -- (5) node[midway, above left] {$\frac{1}{\Delta}$};
-%				\draw[cut, thick] (s) -- (v) node[midway, below] {$\frac{\Delta - 1}{\Delta}$};
-%			\end{tikzpicture}
-%		\end{subfigure}
-%		\begin{subfigure}{.4\textwidth}\centering
-%			\begin{tikzpicture}[main/.style = {draw, circle, inner sep=1.5pt},
-%				flow/.style = {Salmon},
-%				cut/.style = {dashed, PineGreen}]
-%				\node[main,flow] (s) at (0,0) {$1$};
-%				\node[main,flow] (v) at (3,0) {$\frac{1}{\Delta} + \lambda$};
-%				\node[main, flow] (u) at (6,0) {$\frac{1}{\Delta} - \lambda$};
-%				\node[main, flow] (3) at (3,3) {$\frac{1}{\Delta}$};
-%				\node[main, flow] (1) at (1,2) {$\frac{1}{\Delta}$};
-%				\node[main, flow] (2) at (2,2.5) {$\frac{1}{\Delta}$};
-%				\node[main, flow] (5) at (5,2) {$\frac{1}{\Delta}$};
-%				\draw[dotted, flow] (3) to (5);
-%				
-%				\draw[flow, ->, thick] (s) -- (v) node[midway, above] {$1$};
-%				\draw[flow, ->, thick] (v) -- (u) node[midway, above] {$\frac{1}{\Delta} - \lambda$};
-%				\draw[cut, thick] (v) -- (u) node[midway,below] {$2\lambda$};
-%				\draw[flow, ->, thick] (v) -- (1) node[midway, above, right] {$\frac{1}{\Delta}$};
-%				\draw[flow, ->, thick] (v) -- (2) node[midway, above, right] {$\frac{1}{\Delta}$};
-%				\draw[flow, ->, thick] (v) -- (3) node[midway, right] {$\frac{1}{\Delta}$};
-%				\draw[flow, ->, thick] (v) -- (5) node[midway, above left] {$\frac{1}{\Delta}$};
-%				\draw[cut, thick] (s) -- (v) node[midway, below] {$\frac{\Delta - 1}{\Delta}- \lambda$};
-%				\draw[cut, thick] (v) -- (1) node[near end, above, right] {$\lambda$};
-%				\draw[cut, thick] (v) -- (2) node[near end, above, right] {$\lambda$};
-%				\draw[cut, thick] (v) -- (3) node[near end, right] {$\lambda$};
-%				\draw[cut, thick] (v) -- (5) node[near end, above left] {$\lambda$};
-%			\end{tikzpicture}
-%		\end{subfigure}
-%		
-%		\caption{Absorbing flow of the linear relaxation.}
-%		\label{star-graph-lp}
-%	\end{figure}
 
 	\subsection{Consider the distance from source}
 	
@@ -570,24 +435,29 @@
 			\label{comet-graph}
 		\end{figure}
 	
-%	\section{More sources -- \textit{not correct}}
-%	
-%	Now we will try to use our linear program to also introduce a solution for the multi-commodity case; when we have more sources and all of the parts have to be connected. In this particular case we are considering the case with minimizing the sum.
-%	
-%	\begin{equation}
-%		\begin{array}{r l}
-%			\min \sum_{e \in E} x_e \\
-%			x_{uv} \geq \sum_{i \neq j \in [k]} f_u^i - f_v^j & \forall \{uv\} \in E\\
-%			x_{uv} \geq \sum_{i \neq j \in [k]} f_v^i - f_u^j & \forall \{uv\} \in E\\
-%			f_{s_i}^i = 1 & \forall i \in [k] \\
-%			\sum_{u \in V, uv \in E} f_{uv}^i = \sum_{u \in V, vu \in E} f_{vu}^i + f_v^i & \forall v \in V, s \neq v, \forall i \in [k] \\
-%			\sum_{i \in [k]} f_{u}^i = 1 & \forall u \in V \\
-%			f_v^i \in \{0,1\} & \forall v \in V, \forall i \in [k] \\
-%			f_{uv}^i \in \mathbb{R}^+ & \forall \{u,v\} \in E, \forall i \in [k] \\
-%			x_{uv}^i \in \{0,1\} & \forall \{u,v\} \in E, \forall i \in [k]
-%		\end{array}
-%	\end{equation}
-%	If we would like to minimize the maximal cut, then we would have to change it in a proper way.
+	\section{More sources -- \texttt{work in progress}}
+	
+	Now we will try to use our linear program to also introduce a solution for the multi-commodity case; when we have more sources and all of the parts have to be connected. In this particular case we are considering the case with minimizing the sum.
+	
+	\subsection{Linear program}
+	
+	We will now fully establish the linear program, derived from an integer program by its relaxation.
+	
+	\subsubsection{Variables}
+	
+	Instead of one flow we will have multiple flows. That is $f_v^i \in \{0,1\}$ for all $i \in [k]$ and $v \in V$. Therefore we will also have $f_e^i \in \mathbb{R}^+_0$ for all $i \in [k]$ and $e \in E$. We now do not know the size of each part, hence we also introduce variables $k^i \in \mathbb{N}$ for all $i \in [k]$. Lastly we need cut variables $x_e^i \in \{0,1\}$ for all $i \in [k]$.
+	
+	\subsubsection{Constraints}
+	
+	Some constraints are quite easy to establish. Firstly we set $\sum_{i = 1}^k k^i = |V|$ that means that we have covered all vertices. Also $\forall v \in V: \ \sum_{i = 1}^k f_v^i = 1$, that is every vertex is in one of the absorptive flow. Now we also hard code that $f_{s_i}^i = 1$ meaning that $s_i$ is in $i$-th part. The cut we will be similar to the single source problem, that is $x_e^i \geq \left| f_u^i - f_v^i \right|$ for $e = \{u,v\}$ and all $i \in [k]$.
+	
+	There is way more constraints, but they are just translated from the single source absorptive flow to multiple ones. Some of them were even already presented.
+	
+	Also we want to emphasize that there will be one flow which will dominate. That is $\forall e \in E, i \in [k] : \ \left| f_e^i - \sum_{j \neq i} f_e^j \right| > 1/2$.
+	
+	\subsubsection{Optimization function}
+	
+	Now we have two options for optimizing the values. Firstly the sum would be $\min \sum_{e \in E} \sum_{i \in [k]} x_e^i$. For min-max problem we would do a simple trick, which would be adding a constraints $\forall i \in [k]: \ \sum_{e \in E} x_e^i \leq c$ and now we will minimize $\min c$.
 	
 	\section{NP hardness}
 	
