@@ -23,9 +23,10 @@
 
 \theoremstyle{plain}
 \newtheorem{thm}{Theorem}
-\newtheorem{lemma}[thm]{Lemma}
-\newtheorem{claim}[thm]{Claim}
-\newtheorem{observ}[thm]{Observation}
+\newtheorem{lemma}{Lemma}
+\newtheorem{claim}{Claim}
+\newtheorem{observ}{Observation}
+\newtheorem{conj}{Conjecture}
 
 \theoremstyle{plain}
 \newtheorem{defn}{Definition}
@@ -499,6 +500,10 @@
 		\caption{Connected cut algorithm.}
 	\end{algorithm}
 
+	\begin{conj}
+		The above mentioned linear program with enhancements and approximation algorithm will find the optimal connected $k$-cut for trees.
+	\end{conj}
+
 	\section{Example graphs}
 	
 	We will be looking at a few graphs and mostly their classes and try to observe some properties.
@@ -634,5 +639,5 @@
 
 	\begin{proof}
 		We create 1 source vertex, $O(k)$ null vertices and $O(\sum_{a \in A} w(a))$ vertices for cliques. Then we add $O(k)$ edges for null vertices, $O(|A|)$ connections to the cliques and $O(\sum_{a \in A} w^2(a)$ edges inside each clique. Hence all together it is $O(W^2 + k)$ where $W = \sum_{a \in A} w(a)$. \textit{Perhaps there is a little catch. That is it is considering the wights as a values, which may be pseudo polynomial.}
-	\end{proof}	
+	\end{proof}
 \end{document}
